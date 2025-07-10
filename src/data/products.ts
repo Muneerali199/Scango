@@ -73,4 +73,22 @@ export const products: Product[] = [
     data_ai_hint: 'laptop sleeve',
     category: 'Accessories',
   },
+  {
+    id: 'prod_009',
+    name: 'AeroPress Coffee Maker',
+    description: 'A versatile coffee maker, renowned for its rich, smooth, and fast brewing method.',
+    price: 39.95,
+    image: 'https://placehold.co/600x400.png',
+    data_ai_hint: 'coffee maker',
+    category: 'Home',
+  },
+  {
+    id: 'prod_010',
+    name: 'Momentum Tech Backpack',
+    description: 'A minimalist backpack with a dedicated laptop compartment and smart organization.',
+    price: 119.00,
+    image: 'https://placehold.co/600x400.png',
+    data_ai_hint: 'tech backpack',
+    category: 'Accessories',
+  },
 ];
