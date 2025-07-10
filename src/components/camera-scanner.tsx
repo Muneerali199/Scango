@@ -14,43 +14,46 @@ interface CameraScannerProps {
 }
 
 export default function CameraScanner({ onScan, disabled }: CameraScannerProps) {
-  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    let stream: MediaStream | null = null;
-    
-    const enableCamera = async () => {
+    const getCameraPermission = async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        console.error("Camera not supported by this browser.");
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Unsupported Browser',
+          description: 'Your browser does not support camera access.',
+        });
+        return;
+      }
       try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-            throw new Error("Camera not supported by this browser.");
-        }
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        setHasCameraPermission(true);
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+        setHasCameraPermission(true);
+
+        return () => {
+          stream.getTracks().forEach(track => track.stop());
+        };
       } catch (error) {
-        console.error("Error accessing camera:", error);
+        console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
         toast({
-          variant: "destructive",
-          title: "Camera Access Denied",
-          description: "Please enable camera permissions in your browser settings to use this feature.",
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
         });
       }
     };
-    
-    enableCamera();
-    
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
+
+    getCameraPermission();
   }, [toast]);
 
   const captureFrame = useCallback(() => {
@@ -91,14 +94,14 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
                 playsInline
                 muted
             />
-            {!hasCameraPermission && (
+            {hasCameraPermission === false && (
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
                     <Camera className="h-12 w-12 text-muted-foreground mb-4" />
                     <h3 className="text-lg font-semibold">Awaiting Camera Permission</h3>
                     <p className="text-muted-foreground">Please grant permission to use your camera for scanning.</p>
                 </div>
             )}
-            {hasCameraPermission && (
+            {hasCameraPermission === true && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-3/4 h-1/2 border-4 border-white/50 rounded-lg shadow-lg backdrop-blur-sm flex items-center justify-center pointer-events-none">
                         <ScanLine className="h-16 w-16 text-white/80 animate-pulse" />
@@ -108,7 +111,7 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
             <canvas ref={canvasRef} className="hidden"></canvas>
         </div>
         <div className="border-t p-4 bg-background/80 space-y-4">
-            {!hasCameraPermission && (
+            {hasCameraPermission === false && (
                  <Alert variant="destructive">
                     <AlertTitle>Camera Access Required</AlertTitle>
                     <AlertDescription>
