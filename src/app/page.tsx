@@ -98,11 +98,11 @@ export default function Home() {
     : products.filter(p => p.category === selectedCategory);
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col bg-background">
       <Header cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} />
-      <main className="container mx-auto grid flex-1 gap-8 px-4 py-8 md:grid-cols-3 md:px-6 lg:grid-cols-4 lg:gap-12">
-        <div className="md:col-span-2 lg:col-span-3">
-            <div className="mb-8">
+      <main className="container mx-auto grid flex-1 gap-8 px-4 py-8 md:grid-cols-[1fr_350px] lg:grid-cols-[1fr_400px] lg:gap-12">
+        <div className="flex flex-col gap-8">
+            <div>
               <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">Our Products</h1>
               <p className="text-lg text-muted-foreground">Browse our curated selection of high-quality goods.</p>
               <div className="mt-6 flex flex-wrap gap-2">
@@ -111,7 +111,7 @@ export default function Home() {
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
                     onClick={() => setSelectedCategory(category)}
-                    className="capitalize"
+                    className="capitalize rounded-full"
                   >
                     {category}
                   </Button>
@@ -125,7 +125,7 @@ export default function Home() {
               onAddToCart={handleAddToCart}
             />
           </div>
-        <aside className="md:col-span-1 lg:col-span-1">
+        <aside>
           <ShoppingCart
             items={cartItems}
             onUpdate={handleUpdateCartItem}

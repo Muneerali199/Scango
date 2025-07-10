@@ -48,21 +48,21 @@ export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: 
         title: "Payment Successful!",
         description: `Your payment of $${totalAmount.toFixed(2)} has been processed.`,
         variant: "default",
-        className: "bg-accent text-accent-foreground border-green-500",
+        className: "bg-green-600 border-green-600 text-white",
     });
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-sm">
         <DialogHeader>
-          <DialogTitle>Complete Your Purchase</DialogTitle>
+          <DialogTitle className="text-2xl">Complete Your Purchase</DialogTitle>
           <DialogDescription>
-            Enter your payment details to finalize your order. This is a simulated Razorpay checkout.
+            Enter your payment details to finalize your order.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name on Card</FormLabel>
@@ -74,7 +74,10 @@ export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: 
             <FormField control={form.control} name="cardNumber" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Card Number</FormLabel>
-                  <FormControl><Input placeholder="•••• •••• •••• ••••" {...field} /></FormControl>
+                   <div className="relative">
+                    <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <FormControl><Input placeholder="•••• •••• •••• ••••" {...field} className="pl-10" /></FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -82,7 +85,7 @@ export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: 
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="expiry" render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Expiry (MM/YY)</FormLabel>
+                    <FormLabel>Expiry</FormLabel>
                     <FormControl><Input placeholder="MM/YY" {...field} /></FormControl>
                     <FormMessage />
                     </FormItem>
@@ -97,11 +100,11 @@ export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: 
                 )}
                 />
             </div>
-            <Button type="submit" className="w-full" disabled={isProcessing}>
+            <Button type="submit" className="w-full text-lg h-12" disabled={isProcessing}>
               {isProcessing ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
-                <CreditCard className="mr-2 h-4 w-4" />
+                <CreditCard className="mr-2 h-5 w-5" />
               )}
               Pay ${totalAmount.toFixed(2)}
             </Button>
