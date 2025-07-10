@@ -2,6 +2,7 @@
 
 import { ScanLine, ShoppingCart } from "lucide-react";
 import type { FC } from "react";
+import { ThemeToggle } from "./theme-toggle";
 
 interface HeaderProps {
   cartCount: number;
@@ -15,13 +16,16 @@ const Header: FC<HeaderProps> = ({ cartCount }) => {
           <ScanLine className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold text-primary">ScanGo</h1>
         </div>
-        <div className="relative">
-          <ShoppingCart className="h-7 w-7 text-muted-foreground transition-colors hover:text-foreground" />
-          {cartCount > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-              {cartCount}
-            </span>
-          )}
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <div className="relative">
+            <ShoppingCart className="h-7 w-7 text-muted-foreground transition-colors hover:text-foreground" />
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {cartCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </header>
