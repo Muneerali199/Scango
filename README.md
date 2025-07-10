@@ -1,5 +1,53 @@
-# Firebase Studio
+# ScanGo - Smart Checkout
 
-This is a NextJS starter in Firebase Studio.
+Welcome to ScanGo, a modern e-commerce application built with Next.js and powered by Firebase Studio. This project demonstrates a smart checkout system complete with AI-driven product recommendations, a sleek user interface, and a seamless user experience.
 
-To get started, take a look at src/app/page.tsx.
+## ✨ Key Features
+
+- **Modern E-commerce UI:** A beautiful and responsive interface built with ShadCN UI and Tailwind CSS.
+- **AI-Powered Recommendations:** Utilizes Genkit to provide intelligent product suggestions based on the user's shopping cart contents.
+- **Dynamic Product Filtering:** Easily filter products by category to find what you need.
+- **Interactive Shopping Cart:** A fully functional cart to manage items, update quantities, and see a real-time total.
+- **Dark & Light Modes:** A theme toggle allows users to switch between a sleek dark mode and a clean light mode, with their preference saved.
+- **Simulated Real-time Data:** Fetches product data asynchronously to mimic a real-world API.
+- **Secure Checkout Simulation:** A modal-based checkout form for a seamless payment experience.
+
+## 🚀 Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org/) (with App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
+- **Generative AI:** [Genkit](https://firebase.google.com/docs/genkit)
+- **Icons:** [Lucide React](https://lucide.dev/)
+
+## 🛠️ Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+- Node.js (v18 or later)
+- npm or yarn
+
+### Installation & Running
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd <repository-folder>
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+
+Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
+
+You can start editing the main page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
