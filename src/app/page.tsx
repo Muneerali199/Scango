@@ -9,13 +9,29 @@ import { productRecommendation, type ProductRecommendationOutput } from "@/ai/fl
 import AIRecommendations from "@/components/ai-recommendations";
 import { useToast } from "@/hooks/use-toast";
 import { CheckoutForm } from "@/components/checkout-form";
+import { products as allProducts } from "@/data/products";
+import { Button } from "@/components/ui/button";
+
+const categories = ["All", ...new Set(allProducts.map((p) => p.category))];
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [recommendations, setRecommendations] = useState<ProductRecommendationOutput["recommendations"]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchProducts() {
+      // In a real app, you would fetch from an API endpoint
+      // const res = await fetch('/api/products');
+      // const data = await res.json();
+      setProducts(allProducts);
+    }
+    fetchProducts();
+  }, []);
 
   const handleAddToCart = useCallback((product: Product) => {
     setCartItems((prevItems) => {
@@ -77,13 +93,31 @@ export default function Home() {
     }
   }, [cartItems]);
 
+  const filteredProducts = selectedCategory === "All" 
+    ? products 
+    : products.filter(p => p.category === selectedCategory);
+
   return (
     <>
       <Header cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} />
       <main className="container mx-auto px-4 py-8 md:px-6">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12">
           <div className="lg:col-span-2">
-            <ProductList onAddToCart={handleAddToCart} />
+            <div className="mb-8">
+              <h2 className="mb-4 text-3xl font-bold tracking-tight">Products</h2>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <ProductList products={filteredProducts} onAddToCart={handleAddToCart} />
             <AIRecommendations 
               recommendations={recommendations} 
               isLoading={isLoadingRecommendations}
