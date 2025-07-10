@@ -98,19 +98,20 @@ export default function Home() {
     : products.filter(p => p.category === selectedCategory);
 
   return (
-    <>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Header cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} />
-      <main className="container mx-auto px-4 py-8 md:px-6">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12">
-          <div className="lg:col-span-2">
+      <main className="container mx-auto grid flex-1 gap-8 px-4 py-8 md:grid-cols-3 md:px-6 lg:grid-cols-4 lg:gap-12">
+        <div className="md:col-span-2 lg:col-span-3">
             <div className="mb-8">
-              <h2 className="mb-4 text-3xl font-bold tracking-tight">Products</h2>
-              <div className="flex flex-wrap gap-2">
+              <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">Our Products</h1>
+              <p className="text-lg text-muted-foreground">Browse our curated selection of high-quality goods.</p>
+              <div className="mt-6 flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <Button
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
                     onClick={() => setSelectedCategory(category)}
+                    className="capitalize"
                   >
                     {category}
                   </Button>
@@ -124,15 +125,14 @@ export default function Home() {
               onAddToCart={handleAddToCart}
             />
           </div>
-          <div className="lg:col-span-1">
-            <ShoppingCart
-              items={cartItems}
-              onUpdate={handleUpdateCartItem}
-              onRemove={handleRemoveFromCart}
-              onCheckout={() => setIsCheckoutOpen(true)}
-            />
-          </div>
-        </div>
+        <aside className="md:col-span-1 lg:col-span-1">
+          <ShoppingCart
+            items={cartItems}
+            onUpdate={handleUpdateCartItem}
+            onRemove={handleRemoveFromCart}
+            onCheckout={() => setIsCheckoutOpen(true)}
+          />
+        </aside>
       </main>
       <CheckoutForm 
         isOpen={isCheckoutOpen}
@@ -140,6 +140,6 @@ export default function Home() {
         totalAmount={totalAmount}
         onCheckout={handleClearCart}
       />
-    </>
+    </div>
   );
 }

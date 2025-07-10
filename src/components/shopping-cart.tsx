@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import CartItemCard from "./cart-item";
 import type { CartItem } from "@/lib/types";
 import { qualityMultipliers } from "@/lib/types";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, CreditCard } from "lucide-react";
 
 interface ShoppingCartProps {
   items: CartItem[];
@@ -26,34 +26,34 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
   const total = subtotal + tax;
 
   return (
-    <Card className="sticky top-20 h-[calc(100vh-10rem)]">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="sticky top-24 h-[calc(100vh-7.5rem)] shadow-lg rounded-xl">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-2 text-xl">
           <ShoppingBag className="h-6 w-6" />
           <span>Your Cart</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="h-[calc(100%-220px)] p-0">
+      <CardContent className="h-[calc(100%-240px)] p-0">
         <ScrollArea className="h-full">
             <div className="px-6">
                 {items.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                <div className="flex h-full flex-col items-center justify-center pt-16 text-center text-muted-foreground">
                     <ShoppingBag className="h-16 w-16 mb-4" />
                     <p className="text-lg font-medium">Your cart is empty</p>
                     <p className="text-sm">Add products to get started.</p>
                 </div>
                 ) : (
-                items.map((item) => (
+                items.map((item, index) => (
                     <div key={item.id}>
                         <CartItemCard item={item} onUpdate={onUpdate} onRemove={onRemove} />
-                        <Separator className="my-2"/>
+                        {index < items.length -1 && <Separator className="my-2"/>}
                     </div>
                 ))
                 )}
             </div>
         </ScrollArea>
       </CardContent>
-      <CardFooter className="absolute bottom-0 w-full flex-col items-start gap-2 bg-background p-6">
+      <CardFooter className="absolute bottom-0 w-full flex-col items-start gap-4 bg-secondary/50 p-6 rounded-b-xl border-t">
         {items.length > 0 && (
           <>
             <div className="w-full text-sm">
@@ -65,13 +65,14 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
                 <span>Taxes (8%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
-              <Separator className="my-2" />
+              <Separator className="my-2 bg-border/80" />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            <Button className="w-full" onClick={onCheckout}>
+            <Button className="w-full h-11 text-base font-bold" onClick={onCheckout}>
+              <CreditCard className="mr-2 h-5 w-5" />
               Proceed to Checkout
             </Button>
           </>
