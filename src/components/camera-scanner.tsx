@@ -18,6 +18,7 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,14 +35,11 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
       }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
         setHasCameraPermission(true);
-
-        return () => {
-          stream.getTracks().forEach(track => track.stop());
-        };
       } catch (error) {
         console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
@@ -54,6 +52,12 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
     };
 
     getCameraPermission();
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
   }, [toast]);
 
   const captureFrame = useCallback(() => {
@@ -94,14 +98,14 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
                 playsInline
                 muted
             />
-            {hasCameraPermission === false && (
+            {!hasCameraPermission && (
                 <div className="flex flex-col items-center justify-center h-full text-center p-4">
                     <Camera className="h-12 w-12 text-muted-foreground mb-4" />
                     <h3 className="text-lg font-semibold">Awaiting Camera Permission</h3>
                     <p className="text-muted-foreground">Please grant permission to use your camera for scanning.</p>
                 </div>
             )}
-            {hasCameraPermission === true && (
+            {hasCameraPermission && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-3/4 h-1/2 border-4 border-white/50 rounded-lg shadow-lg backdrop-blur-sm flex items-center justify-center pointer-events-none">
                         <ScanLine className="h-16 w-16 text-white/80 animate-pulse" />
