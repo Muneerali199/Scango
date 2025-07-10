@@ -19,28 +19,42 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
 
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let isCancelled = false;
+    
     const getCameraPermission = async () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setHasCameraPermission(false);
+        if (!isCancelled) setHasCameraPermission(false);
         return;
       }
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        setHasCameraPermission(true);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+        if (!isCancelled) {
+          setHasCameraPermission(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } else {
+            // if component unmounted while we were waiting for permission
+            stream.getTracks().forEach(track => track.stop());
         }
       } catch (error) {
         console.error("Error accessing camera:", error);
-        setHasCameraPermission(false);
+        if (!isCancelled) setHasCameraPermission(false);
       }
     };
+
     getCameraPermission();
-    
+
     return () => {
+        isCancelled = true;
         // Cleanup: stop video stream when component unmounts
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
+        }
+        if (videoRef.current && videoRef.current.srcObject) {
+            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+            tracks.forEach(track => track.stop());
+            videoRef.current.srcObject = null;
         }
     }
   }, []);
