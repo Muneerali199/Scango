@@ -47,6 +47,8 @@ In today's retail landscape, customers lack immediate access to crucial product 
 - **Generative AI:** [Genkit](https://firebase.google.com/docs/genkit) (for product analysis and recommendations)
 - **Icons:** [Lucide React](https://lucide.dev/)
 
+For a detailed breakdown of the project structure, please see [STRUCTURE.md](STRUCTURE.md).
+
 ## 🛠️ Getting Started
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
