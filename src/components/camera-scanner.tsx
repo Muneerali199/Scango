@@ -2,10 +2,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Camera, Upload, AlertTriangle, ScanLine } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Camera, Upload, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 
 interface CameraScannerProps {
@@ -18,16 +16,16 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
+    let stream: MediaStream | null = null;
     const getCameraPermission = async () => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setHasCameraPermission(false);
         return;
       }
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         setHasCameraPermission(true);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -41,8 +39,7 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
     
     return () => {
         // Cleanup: stop video stream when component unmounts
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
+        if (stream) {
             stream.getTracks().forEach(track => track.stop());
         }
     }
