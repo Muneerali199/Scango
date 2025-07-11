@@ -22,8 +22,11 @@ In today's retail landscape, customers lack immediate access to crucial product 
 - **AI-Powered Recommendations:** Utilizes Genkit to provide intelligent product suggestions based on the user's shopping cart contents.
 - **Dynamic Product Filtering:** Easily filter products by category to find exactly what you need.
 - **Interactive Shopping Cart:** A fully functional cart to manage items, update quantities, and see a real-time total.
+- **User & Admin Dashboards:** Separate, secure dashboards for customer account management and administrator store oversight.
 - **Dark & Light Modes:** A theme toggle allows users to switch between a sleek dark mode and a clean light mode, with their preference saved.
 - **Secure Checkout Simulation:** A modal-based checkout form for a seamless payment experience.
+- **Wishlist Functionality:** Users can save their favorite products to a persistent wishlist.
+- **Admin Product Management:** Admins can add new products to the store directly from their dashboard.
 
 ## 🖼️ Screenshots
 
@@ -46,6 +49,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
 - **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
 - **Generative AI:** [Genkit](https://firebase.google.com/docs/genkit) (for product analysis and recommendations)
 - **Icons:** [Lucide React](https://lucide.dev/)
+- **Authentication:** [Firebase Auth](https://firebase.google.com/docs/auth)
 
 For a detailed breakdown of the project structure, please see [STRUCTURE.md](STRUCTURE.md).
 
