@@ -52,15 +52,17 @@ export default function AdminDashboard() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.email === 'admin@example.com') {
         setUser(user);
+        setLoading(false);
       } else if (user) {
         // Not an admin, redirect to user dashboard
         router.push("/dashboard");
+        setLoading(false);
       }
       else {
         // Not logged in, redirect to login
-        router.push("/login");
+        router.push("/login/admin");
+        setLoading(false);
       }
-      setLoading(false);
     });
     return () => unsubscribe();
   }, [auth, router]);

@@ -34,7 +34,7 @@ export default function UserDashboard() {
           setLoading(false);
         }
       } else {
-        router.push("/login");
+        router.push("/login/user");
       }
     });
 

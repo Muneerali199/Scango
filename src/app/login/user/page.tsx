@@ -5,17 +5,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseApp } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
-
-export default function SignupPage() {
+export default function UserLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -23,24 +22,24 @@ export default function SignupPage() {
   const auth = getAuth(firebaseApp);
   const { toast } = useToast();
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      toast({
-        title: "Account Created",
-        description: "You can now log in with your new account.",
-      });
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
-      router.push("/login/user");
+      toast({
+        title: "Login Successful",
+        description: "Redirecting to your dashboard...",
+      });
+
+      router.push("/dashboard");
       
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Signup Failed",
-        description: error.message || "An unexpected error occurred.",
+        title: "Login Failed",
+        description: error.message || "Please check your credentials and try again.",
       });
     } finally {
       setIsLoading(false);
@@ -49,15 +48,21 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="mx-auto max-w-sm w-full">
+      <Card className="mx-auto max-w-sm w-full relative">
+         <Link href="/login" className="absolute top-4 left-4">
+            <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+                <span className="sr-only">Back</span>
+            </Button>
+        </Link>
         <CardHeader>
-          <CardTitle className="text-xl">Sign Up</CardTitle>
+          <CardTitle className="text-2xl">User Login</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Enter your email below to login to your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignUp} className="grid gap-4">
+          <form onSubmit={handleSignIn} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -70,23 +75,25 @@ export default function SignupPage() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+              </div>
               <Input 
                 id="password" 
                 type="password" 
-                required
+                required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create an account"}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Login
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="underline">
+              Sign up
             </Link>
           </div>
         </CardContent>

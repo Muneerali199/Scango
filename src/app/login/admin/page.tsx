@@ -5,42 +5,50 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { firebaseApp } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
-
-export default function SignupPage() {
-  const [email, setEmail] = useState("");
+export default function AdminLoginPage() {
+  const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const auth = getAuth(firebaseApp);
   const { toast } = useToast();
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    if (email !== 'admin@example.com') {
+        toast({
+            variant: "destructive",
+            title: "Access Denied",
+            description: "This login is for administrators only.",
+        });
+        setIsLoading(false);
+        return;
+    }
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      toast({
-        title: "Account Created",
-        description: "You can now log in with your new account.",
-      });
+      await signInWithEmailAndPassword(auth, email, password);
       
-      router.push("/login/user");
+      toast({
+        title: "Admin Login Successful",
+        description: "Redirecting to the admin dashboard...",
+      });
+
+      router.push("/admin/dashboard");
       
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Signup Failed",
-        description: error.message || "An unexpected error occurred.",
+        title: "Login Failed",
+        description: error.message || "Please check your credentials and try again.",
       });
     } finally {
       setIsLoading(false);
@@ -49,46 +57,50 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="mx-auto max-w-sm w-full">
+      <Card className="mx-auto max-w-sm w-full relative">
+        <Link href="/login" className="absolute top-4 left-4">
+            <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+                <span className="sr-only">Back</span>
+            </Button>
+        </Link>
         <CardHeader>
-          <CardTitle className="text-xl">Sign Up</CardTitle>
+          <CardTitle className="text-2xl">Admin Login</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Enter admin credentials to access the dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignUp} className="grid gap-4">
+          <form onSubmit={handleSignIn} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="admin@example.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                readOnly
+                className="cursor-not-allowed bg-muted"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+              </div>
               <Input 
                 id="password" 
                 type="password" 
-                required
+                required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create an account"}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Login
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>

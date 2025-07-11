@@ -69,9 +69,9 @@ const Header: FC<HeaderProps> = ({ cartCount }) => {
             </>
           ) : (
             <Link href="/login">
-              <Button variant="ghost" size="icon">
-                <User className="h-6 w-6" />
-                <span className="sr-only">Login</span>
+              <Button variant="ghost">
+                <User className="h-5 w-5 sm:mr-2" />
+                <span className="hidden sm:inline">Login</span>
               </Button>
             </Link>
           )}
