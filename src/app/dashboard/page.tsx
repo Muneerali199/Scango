@@ -12,9 +12,29 @@ import { Loader2, LogOut, ShoppingBag, Heart, Package, History } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { products as allProducts } from "@/data/products";
-import type { Product } from "@/lib/types";
+import type { Product, CartItem, Order } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+
+const mockOrders: Order[] = [
+  {
+    id: "ORD001",
+    date: "2024-05-20",
+    total: 289.98,
+    status: "Delivered",
+    items: [
+      { ...allProducts[0], quantity: 1, quality: 'Standard' },
+      { ...allProducts[5], quantity: 1, quality: 'Standard' },
+    ],
+  },
+  {
+    id: "ORD002",
+    date: "2024-06-12",
+    total: 39.95,
+    status: "Processing",
+    items: [{ ...allProducts[8], quantity: 1, quality: 'Standard' }],
+  },
+];
 
 export default function UserDashboard() {
   const auth = getAuth(firebaseApp);
@@ -22,7 +42,8 @@ export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState<Product[]>([]);
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -50,9 +71,17 @@ export default function UserDashboard() {
       }
     }
     
-    // In a real app, cart items would be fetched from a DB. Here we simulate it.
-    // For this example, we'll just show a static number. A real implementation would be more complex.
-    setCartItemCount(5); 
+    const storedCartItems = localStorage.getItem("cart");
+    if (storedCartItems) {
+        try {
+            setCartItems(JSON.parse(storedCartItems));
+        } catch(e) {
+            console.error("Failed to parse cart from localStorage", e);
+            localStorage.removeItem("cart");
+        }
+    }
+
+    setOrders(mockOrders);
 
     return () => unsubscribe();
   }, [auth, router]);
@@ -65,6 +94,8 @@ export default function UserDashboard() {
       console.error("Error signing out: ", error);
     }
   };
+
+  const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   if (loading) {
     return (
@@ -129,7 +160,7 @@ export default function UserDashboard() {
                 <History className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">3</div>
+                <div className="text-2xl font-bold">{orders.length}</div>
                 <p className="text-xs text-muted-foreground">Completed in the last year</p>
                 </CardContent>
             </Card>
@@ -170,11 +201,28 @@ export default function UserDashboard() {
                     <CardDescription>A list of your past purchases.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                     <div className="text-center text-muted-foreground py-12">
-                        <History className="mx-auto h-12 w-12 mb-4" />
-                        <p className="font-semibold">No orders yet.</p>
-                        <p className="text-sm">Your past orders will appear here.</p>
-                    </div>
+                     {orders.length > 0 ? (
+                         <div className="space-y-6">
+                            {orders.map(order => (
+                                <div key={order.id} className="flex flex-col sm:flex-row gap-4 justify-between">
+                                    <div>
+                                        <h4 className="font-semibold">{order.id}</h4>
+                                        <p className="text-sm text-muted-foreground">Date: {new Date(order.date).toLocaleDateString()}</p>
+                                        <p className="text-sm text-muted-foreground">Total: ${order.total.toFixed(2)}</p>
+                                    </div>
+                                    <div className="flex items-center">
+                                       <Badge variant={order.status === "Delivered" ? "default" : "secondary"} className={order.status === "Delivered" ? "bg-green-600" : ""}>{order.status}</Badge>
+                                    </div>
+                                </div>
+                            ))}
+                         </div>
+                     ) : (
+                        <div className="text-center text-muted-foreground py-12">
+                            <History className="mx-auto h-12 w-12 mb-4" />
+                            <p className="font-semibold">No orders yet.</p>
+                            <p className="text-sm">Your past orders will appear here.</p>
+                        </div>
+                     )}
                 </CardContent>
             </Card>
         </div>

@@ -1,3 +1,4 @@
+
 export type ProductQuality = 'Budget' | 'Standard' | 'Premium';
 
 export const qualityMultipliers: Record<ProductQuality, number> = {
@@ -19,4 +20,12 @@ export interface Product {
 export interface CartItem extends Product {
   quantity: number;
   quality: ProductQuality;
+}
+
+export interface Order {
+    id: string;
+    date: string;
+    total: number;
+    status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+    items: CartItem[];
 }

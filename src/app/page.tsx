@@ -10,13 +10,11 @@ import { productRecommendation, type ProductRecommendationOutput } from "@/ai/fl
 import AIRecommendations from "@/components/ai-recommendations";
 import { toast } from "react-hot-toast";
 import { CheckoutForm } from "@/components/checkout-form";
-import { products as allProducts } from "@/data/products";
+import { products as initialProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
 
-const categories = ["All", ...new Set(allProducts.map((p) => p.category))];
-
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = useState<ProductRecommendationOutput["recommendations"]>([]);
@@ -25,28 +23,66 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
-    async function fetchProducts() {
-      // In a real app, you would fetch from an API endpoint
-      // const res = await fetch('/api/products');
-      // const data = await res.json();
-      setProducts(allProducts);
+    // Load products from localStorage or use initial products
+    const storedProducts = localStorage.getItem("products");
+    if (storedProducts) {
+        try {
+            setProducts(JSON.parse(storedProducts));
+        } catch (e) {
+            console.error("Failed to parse products from localStorage", e);
+            setProducts(initialProducts);
+            localStorage.setItem("products", JSON.stringify(initialProducts));
+        }
+    } else {
+        localStorage.setItem("products", JSON.stringify(initialProducts));
     }
-    fetchProducts();
+    
+    // Listen for storage changes to update products list
+    const handleStorageChange = () => {
+      const updatedProducts = localStorage.getItem("products");
+      if (updatedProducts) {
+        setProducts(JSON.parse(updatedProducts));
+      }
+      const updatedCart = localStorage.getItem("cart");
+       if (updatedCart) {
+        setCartItems(JSON.parse(updatedCart));
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // Load initial wishlist and cart from localStorage
     const storedWishlist = localStorage.getItem("wishlist");
     if (storedWishlist) {
       setWishlist(new Set(JSON.parse(storedWishlist)));
     }
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  const updateCart = (newCartItems: CartItem[]) => {
+      setCartItems(newCartItems);
+      localStorage.setItem("cart", JSON.stringify(newCartItems));
+      window.dispatchEvent(new Event('storage'));
+  }
+
   const handleAddToCart = useCallback((product: Product) => {
+    let newItems: CartItem[];
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
-        return prevItems.map((item) =>
+        newItems = prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
+      } else {
+        newItems = [...prevItems, { ...product, quantity: 1, quality: "Standard" }];
       }
-      return [...prevItems, { ...product, quantity: 1, quality: "Standard" }];
+      localStorage.setItem('cart', JSON.stringify(newItems));
+      window.dispatchEvent(new Event('storage'));
+      return newItems;
     });
     toast.success(`${product.name} added to cart!`);
   }, []);
@@ -62,25 +98,37 @@ export default function Home() {
         toast.success(`${productName} added to wishlist!`);
       }
       localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+      window.dispatchEvent(new Event('storage'));
       return newWishlist;
     });
   }, []);
 
   const handleRemoveFromCart = useCallback((itemId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    setCartItems((prevItems) => {
+        const newItems = prevItems.filter((item) => item.id !== itemId);
+        localStorage.setItem('cart', JSON.stringify(newItems));
+        window.dispatchEvent(new Event('storage'));
+        return newItems;
+    });
   }, []);
 
   const handleUpdateCartItem = useCallback((updatedItem: CartItem) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+    setCartItems((prevItems) => {
+        const newItems = prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item));
+        localStorage.setItem('cart', JSON.stringify(newItems));
+        window.dispatchEvent(new Event('storage'));
+        return newItems;
+    });
   }, []);
   
   const handleClearCart = useCallback(() => {
     setCartItems([]);
+    localStorage.removeItem('cart');
+    window.dispatchEvent(new Event('storage'));
   }, []);
   
   const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   useEffect(() => {
     if (cartItems.length > 0) {

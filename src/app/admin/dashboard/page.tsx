@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
 import { firebaseApp } from "@/lib/firebase";
-import { Loader2, Box, LogOut, Users, DollarSign, BarChart3, Package, ArrowUpRight } from "lucide-react";
+import { Loader2, PlusCircle, LogOut, Users, DollarSign, BarChart3, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { products as allProducts } from "@/data/products";
@@ -21,6 +21,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { AddProductForm } from "@/components/add-product-form";
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -47,6 +48,36 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(allProducts);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+
+  useEffect(() => {
+    // This effect runs once to load products from localStorage if they exist
+    const storedProducts = localStorage.getItem("products");
+    if (storedProducts) {
+      try {
+        setProducts(JSON.parse(storedProducts));
+      } catch (e) {
+        console.error("Failed to parse products from localStorage", e);
+        setProducts(allProducts);
+        localStorage.setItem("products", JSON.stringify(allProducts));
+      }
+    } else {
+        localStorage.setItem("products", JSON.stringify(allProducts));
+    }
+  }, []);
+
+  useEffect(() => {
+    // This effect listens for changes in localStorage and updates the state
+    const handleStorageChange = () => {
+      const storedProducts = localStorage.getItem("products");
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -56,12 +87,10 @@ export default function AdminDashboard() {
       } else if (user) {
         // Not an admin, redirect to user dashboard
         router.push("/dashboard");
-        setLoading(false);
       }
       else {
         // Not logged in, redirect to login
         router.push("/login/admin");
-        setLoading(false);
       }
     });
     return () => unsubscribe();
@@ -76,7 +105,17 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading || !user) {
+  const handleProductAdded = (newProduct: Product) => {
+     setProducts(prevProducts => {
+        const updatedProducts = [...prevProducts, newProduct];
+        localStorage.setItem("products", JSON.stringify(updatedProducts));
+        // Manually trigger storage event for the current window
+        window.dispatchEvent(new Event('storage'));
+        return updatedProducts;
+      });
+  };
+
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -85,6 +124,7 @@ export default function AdminDashboard() {
   }
 
   return (
+    <>
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:px-6">
           <h1 className="text-xl font-semibold">Admin Dashboard</h1>
@@ -153,7 +193,7 @@ export default function AdminDashboard() {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{allProducts.length}</div>
+              <div className="text-2xl font-bold">{products.length}</div>
               <p className="text-xs text-muted-foreground">
                 Current catalog count
               </p>
@@ -240,9 +280,15 @@ export default function AdminDashboard() {
           </Card>
         </div>
          <Card>
-            <CardHeader>
-                <CardTitle>Products</CardTitle>
-                <CardDescription>Manage your products and view their sales performance.</CardDescription>
+            <CardHeader className="flex items-center justify-between">
+                <div>
+                    <CardTitle>Products</CardTitle>
+                    <CardDescription>Manage your products and view their sales performance.</CardDescription>
+                </div>
+                <Button onClick={() => setIsAddProductOpen(true)}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Product
+                </Button>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -256,7 +302,7 @@ export default function AdminDashboard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {allProducts.map((product: Product) => (
+                        {products.map((product: Product) => (
                             <TableRow key={product.id}>
                                 <TableCell className="hidden sm:table-cell">
                                     <Image
@@ -282,5 +328,11 @@ export default function AdminDashboard() {
         </Card>
       </main>
     </div>
+    <AddProductForm
+        isOpen={isAddProductOpen}
+        onOpenChange={setIsAddProductOpen}
+        onProductAdded={handleProductAdded}
+    />
+    </>
   );
 }
