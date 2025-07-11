@@ -118,20 +118,18 @@ export default function Home() {
   }, []);
 
   const handleToggleWishlist = useCallback((productId: string, productName: string) => {
-    setWishlist(prevWishlist => {
-      const newWishlist = new Set(prevWishlist);
-      if (newWishlist.has(productId)) {
-        newWishlist.delete(productId);
-        toast.success(`${productName} removed from wishlist.`);
-      } else {
-        newWishlist.add(productId);
-        toast.success(`${productName} added to wishlist!`);
-      }
-      localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
-      triggerStorageUpdate();
-      return newWishlist;
-    });
-  }, []);
+    const newWishlist = new Set(wishlist);
+    if (newWishlist.has(productId)) {
+      newWishlist.delete(productId);
+      toast.success(`${productName} removed from wishlist.`);
+    } else {
+      newWishlist.add(productId);
+      toast.success(`${productName} added to wishlist!`);
+    }
+    setWishlist(newWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+    triggerStorageUpdate();
+  }, [wishlist]);
 
   const handleRemoveFromCart = useCallback((itemId: string) => {
     setCartItems((prevItems) => {
