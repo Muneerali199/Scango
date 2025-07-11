@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -17,6 +18,7 @@ const categories = ["All", ...new Set(allProducts.map((p) => p.category))];
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = useState<ProductRecommendationOutput["recommendations"]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -31,6 +33,10 @@ export default function Home() {
       setProducts(allProducts);
     }
     fetchProducts();
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      setWishlist(new Set(JSON.parse(storedWishlist)));
+    }
   }, []);
 
   const handleAddToCart = useCallback((product: Product) => {
@@ -47,6 +53,27 @@ export default function Home() {
         title: "Added to cart!",
         description: `${product.name} is now in your cart.`,
     })
+  }, [toast]);
+
+  const handleToggleWishlist = useCallback((productId: string, productName: string) => {
+    setWishlist(prevWishlist => {
+      const newWishlist = new Set(prevWishlist);
+      if (newWishlist.has(productId)) {
+        newWishlist.delete(productId);
+        toast({
+          title: "Removed from Wishlist",
+          description: `${productName} has been removed from your wishlist.`,
+        });
+      } else {
+        newWishlist.add(productId);
+        toast({
+          title: "Added to Wishlist!",
+          description: `${productName} has been added to your wishlist.`,
+        });
+      }
+      localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
+      return newWishlist;
+    });
   }, [toast]);
 
   const handleRemoveFromCart = useCallback((itemId: string) => {
@@ -118,7 +145,12 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <ProductList products={filteredProducts} onAddToCart={handleAddToCart} />
+            <ProductList 
+              products={filteredProducts} 
+              onAddToCart={handleAddToCart}
+              wishlist={wishlist}
+              onToggleWishlist={handleToggleWishlist}
+            />
             <AIRecommendations 
               recommendations={recommendations} 
               isLoading={isLoadingRecommendations}
