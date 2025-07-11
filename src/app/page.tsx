@@ -12,6 +12,10 @@ import { toast } from "react-hot-toast";
 import { CheckoutForm } from "@/components/checkout-form";
 import { products as initialProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { ShoppingBag } from "lucide-react";
+
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -21,13 +25,17 @@ export default function Home() {
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const isMobile = useIsMobile();
+
 
   useEffect(() => {
     // Load products from localStorage or use initial products
     const storedProducts = localStorage.getItem("products");
     if (storedProducts) {
         try {
-            setProducts(JSON.parse(storedProducts));
+            const parsedProducts = JSON.parse(storedProducts);
+            setProducts(parsedProducts);
         } catch (e) {
             console.error("Failed to parse products from localStorage", e);
             setProducts(initialProducts);
@@ -38,40 +46,62 @@ export default function Home() {
     }
     
     // Listen for storage changes to update products list
-    const handleStorageChange = () => {
-      const updatedProducts = localStorage.getItem("products");
-      if (updatedProducts) {
-        setProducts(JSON.parse(updatedProducts));
-      }
-      const updatedCart = localStorage.getItem("cart");
-       if (updatedCart) {
-        setCartItems(JSON.parse(updatedCart));
-      }
+    const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === 'products') {
+            const updatedProducts = localStorage.getItem("products");
+            if (updatedProducts) {
+                setProducts(JSON.parse(updatedProducts));
+            }
+        }
+        if (e.key === 'cart') {
+            const updatedCart = localStorage.getItem("cart");
+            if (updatedCart) {
+                setCartItems(JSON.parse(updatedCart));
+            }
+        }
+        if (e.key === 'wishlist') {
+            const updatedWishlist = localStorage.getItem("wishlist");
+            if(updatedWishlist) {
+                setWishlist(new Set(JSON.parse(updatedWishlist)))
+            }
+        }
     };
     window.addEventListener('storage', handleStorageChange);
 
     // Load initial wishlist and cart from localStorage
     const storedWishlist = localStorage.getItem("wishlist");
     if (storedWishlist) {
-      setWishlist(new Set(JSON.parse(storedWishlist)));
+      try {
+        setWishlist(new Set(JSON.parse(storedWishlist)));
+      } catch (e) {
+        localStorage.removeItem("wishlist");
+      }
     }
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+      try {
+        setCartItems(JSON.parse(storedCart));
+      } catch(e) {
+        localStorage.removeItem("cart");
+      }
     }
 
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  const triggerStorageUpdate = () => {
+    window.dispatchEvent(new Event('storage'));
+  };
+
   const updateCart = (newCartItems: CartItem[]) => {
       setCartItems(newCartItems);
       localStorage.setItem("cart", JSON.stringify(newCartItems));
-      window.dispatchEvent(new Event('storage'));
+      triggerStorageUpdate();
   }
 
   const handleAddToCart = useCallback((product: Product) => {
-    let newItems: CartItem[];
     setCartItems((prevItems) => {
+      let newItems: CartItem[];
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {
         newItems = prevItems.map((item) =>
@@ -81,7 +111,7 @@ export default function Home() {
         newItems = [...prevItems, { ...product, quantity: 1, quality: "Standard" }];
       }
       localStorage.setItem('cart', JSON.stringify(newItems));
-      window.dispatchEvent(new Event('storage'));
+      triggerStorageUpdate();
       return newItems;
     });
     toast.success(`${product.name} added to cart!`);
@@ -98,7 +128,7 @@ export default function Home() {
         toast.success(`${productName} added to wishlist!`);
       }
       localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
-      window.dispatchEvent(new Event('storage'));
+      triggerStorageUpdate();
       return newWishlist;
     });
   }, []);
@@ -107,7 +137,7 @@ export default function Home() {
     setCartItems((prevItems) => {
         const newItems = prevItems.filter((item) => item.id !== itemId);
         localStorage.setItem('cart', JSON.stringify(newItems));
-        window.dispatchEvent(new Event('storage'));
+        triggerStorageUpdate();
         return newItems;
     });
   }, []);
@@ -116,7 +146,7 @@ export default function Home() {
     setCartItems((prevItems) => {
         const newItems = prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item));
         localStorage.setItem('cart', JSON.stringify(newItems));
-        window.dispatchEvent(new Event('storage'));
+        triggerStorageUpdate();
         return newItems;
     });
   }, []);
@@ -124,11 +154,12 @@ export default function Home() {
   const handleClearCart = useCallback(() => {
     setCartItems([]);
     localStorage.removeItem('cart');
-    window.dispatchEvent(new Event('storage'));
+    triggerStorageUpdate();
+    setIsCheckoutOpen(false);
   }, []);
   
   const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const categories = ["All", ...new Set(products.map((p) => p.category))];
+  const categories = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
 
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -162,48 +193,68 @@ export default function Home() {
     ? products 
     : products.filter(p => p.category === selectedCategory);
 
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const cartComponent = (
+      <ShoppingCart
+        items={cartItems}
+        onUpdate={handleUpdateCartItem}
+        onRemove={handleRemoveFromCart}
+        onCheckout={() => {
+            setIsCartOpen(false);
+            setIsCheckoutOpen(true);
+        }}
+        isSheet={isMobile}
+      />
+  );
+  
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)} />
-      <main className="container mx-auto grid flex-1 gap-8 px-4 py-8 md:grid-cols-[1fr_350px] lg:grid-cols-[1fr_400px] lg:gap-12">
-        <div className="flex flex-col gap-8">
-            <div>
-              <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">Our Products</h1>
-              <p className="text-lg text-muted-foreground">Browse our curated selection of high-quality goods.</p>
-              <div className="mt-6 flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    onClick={() => setSelectedCategory(category)}
-                    className="capitalize rounded-full"
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
+      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+      <div className="container mx-auto flex-1">
+        <main className="grid flex-1 gap-8 px-4 py-8 md:grid-cols-1 lg:grid-cols-[1fr_380px] lg:gap-12">
+            <div className="flex flex-col gap-8">
+                <div>
+                  <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">Our Products</h1>
+                  <p className="text-lg text-muted-foreground">Browse our curated selection of high-quality goods.</p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        onClick={() => setSelectedCategory(category)}
+                        className="capitalize rounded-full"
+                      >
+                        {category}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <ProductList 
+                  products={filteredProducts} 
+                  onAddToCart={handleAddToCart}
+                  wishlist={wishlist}
+                  onToggleWishlist={handleToggleWishlist}
+                />
+                <AIRecommendations 
+                  recommendations={recommendations} 
+                  isLoading={isLoadingRecommendations}
+                  onAddToCart={handleAddToCart}
+                />
             </div>
-            <ProductList 
-              products={filteredProducts} 
-              onAddToCart={handleAddToCart}
-              wishlist={wishlist}
-              onToggleWishlist={handleToggleWishlist}
-            />
-            <AIRecommendations 
-              recommendations={recommendations} 
-              isLoading={isLoadingRecommendations}
-              onAddToCart={handleAddToCart}
-            />
-          </div>
-        <aside>
-          <ShoppingCart
-            items={cartItems}
-            onUpdate={handleUpdateCartItem}
-            onRemove={handleRemoveFromCart}
-            onCheckout={() => setIsCheckoutOpen(true)}
-          />
-        </aside>
-      </main>
+            {isMobile ? (
+                <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+                    <SheetContent className="flex flex-col p-0 w-full sm:max-w-md">
+                        {cartComponent}
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <aside className="hidden lg:block">
+                    {cartComponent}
+                </aside>
+            )}
+        </main>
+      </div>
       <CheckoutForm 
         isOpen={isCheckoutOpen}
         onOpenChange={setIsCheckoutOpen}

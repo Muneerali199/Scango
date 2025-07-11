@@ -11,15 +11,18 @@ import { getAuth, onAuthStateChanged, signOut, type User as FirebaseUser } from 
 import { firebaseApp } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeaderProps {
   cartCount: number;
+  onCartClick: () => void;
 }
 
-const Header: FC<HeaderProps> = ({ cartCount }) => {
+const Header: FC<HeaderProps> = ({ cartCount, onCartClick }) => {
   const auth = getAuth(firebaseApp);
   const router = useRouter();
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -75,14 +78,15 @@ const Header: FC<HeaderProps> = ({ cartCount }) => {
               </Button>
             </Link>
           )}
-          <div className="relative">
+           <Button variant="ghost" size="icon" className="relative" onClick={onCartClick}>
             <ShoppingCart className="h-7 w-7 text-muted-foreground transition-colors hover:text-foreground" />
+             <span className="sr-only">Open Cart</span>
             {cartCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                 {cartCount}
               </span>
             )}
-          </div>
+          </Button>
         </div>
       </div>
     </header>

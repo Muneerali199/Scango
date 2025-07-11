@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FC } from "react";
@@ -15,9 +16,10 @@ interface ShoppingCartProps {
   onUpdate: (item: CartItem) => void;
   onRemove: (itemId: string) => void;
   onCheckout: () => void;
+  isSheet?: boolean;
 }
 
-const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onCheckout }) => {
+const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onCheckout, isSheet = false }) => {
   const subtotal = items.reduce(
     (acc, item) => acc + item.price * qualityMultipliers[item.quality] * item.quantity,
     0
@@ -25,8 +27,8 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + tax;
 
-  return (
-    <Card className="sticky top-24 flex flex-col h-[calc(100vh-7.5rem)] shadow-2xl rounded-2xl bg-card/80 backdrop-blur-sm border-2">
+  const content = (
+    <>
       <CardHeader className="pb-4 border-b">
         <CardTitle className="flex items-center gap-3 text-xl font-bold">
           <ShoppingBag className="h-7 w-7" />
@@ -54,7 +56,7 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
         </ScrollArea>
       </CardContent>
       {items.length > 0 && (
-      <CardFooter className="flex-col items-start gap-4 bg-secondary/30 p-6 rounded-b-2xl border-t-2 mt-auto">
+      <CardFooter className="flex-col items-start gap-4 bg-secondary/30 p-6 rounded-b-lg border-t mt-auto">
           <>
             <div className="w-full space-y-2 text-md">
               <div className="flex justify-between text-muted-foreground">
@@ -78,6 +80,16 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
           </>
       </CardFooter>
       )}
+    </>
+  );
+
+  if (isSheet) {
+    return <div className="flex flex-col h-full">{content}</div>;
+  }
+  
+  return (
+    <Card className="sticky top-24 flex flex-col h-[calc(100vh-7.5rem)] shadow-lg rounded-xl">
+      {content}
     </Card>
   );
 };
