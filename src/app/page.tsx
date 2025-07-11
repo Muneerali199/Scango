@@ -8,7 +8,7 @@ import ShoppingCart from "@/components/shopping-cart";
 import type { CartItem, Product } from "@/lib/types";
 import { productRecommendation, type ProductRecommendationOutput } from "@/ai/flows/product-recommendation";
 import AIRecommendations from "@/components/ai-recommendations";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { CheckoutForm } from "@/components/checkout-form";
 import { products as allProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,6 @@ export default function Home() {
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -49,32 +48,23 @@ export default function Home() {
       }
       return [...prevItems, { ...product, quantity: 1, quality: "Standard" }];
     });
-    toast({
-        title: "Added to cart!",
-        description: `${product.name} is now in your cart.`,
-    })
-  }, [toast]);
+    toast.success(`${product.name} added to cart!`);
+  }, []);
 
   const handleToggleWishlist = useCallback((productId: string, productName: string) => {
     setWishlist(prevWishlist => {
       const newWishlist = new Set(prevWishlist);
       if (newWishlist.has(productId)) {
         newWishlist.delete(productId);
-        toast({
-          title: "Removed from Wishlist",
-          description: `${productName} has been removed from your wishlist.`,
-        });
+        toast.success(`${productName} removed from wishlist.`);
       } else {
         newWishlist.add(productId);
-        toast({
-          title: "Added to Wishlist!",
-          description: `${productName} has been added to your wishlist.`,
-        });
+        toast.success(`${productName} added to wishlist!`);
       }
       localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
       return newWishlist;
     });
-  }, [toast]);
+  }, []);
 
   const handleRemoveFromCart = useCallback((itemId: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemId));

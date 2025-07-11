@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function UserLoginPage() {
@@ -20,27 +20,19 @@ export default function UserLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const auth = getAuth(firebaseApp);
-  const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       
-      toast({
-        title: "Login Successful",
-        description: "Redirecting to your dashboard...",
-      });
+      toast.success("Login Successful! Redirecting...");
 
       router.push("/dashboard");
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "Please check your credentials and try again.",
-      });
+      toast.error(error.message || "Please check your credentials and try again.");
     } finally {
       setIsLoading(false);
     }

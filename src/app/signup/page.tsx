@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
 
@@ -21,7 +21,6 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const auth = getAuth(firebaseApp);
-  const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,19 +28,12 @@ export default function SignupPage() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
 
-      toast({
-        title: "Account Created",
-        description: "You can now log in with your new account.",
-      });
+      toast.success("Account Created! You can now log in.");
       
       router.push("/login/user");
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Signup Failed",
-        description: error.message || "An unexpected error occurred.",
-      });
+      toast.error(error.message || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }

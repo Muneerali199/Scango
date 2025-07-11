@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -20,36 +20,24 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const auth = getAuth(firebaseApp);
-  const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     if (email !== 'admin@example.com') {
-        toast({
-            variant: "destructive",
-            title: "Access Denied",
-            description: "This login is for administrators only.",
-        });
+        toast.error("This login is for administrators only.");
         setIsLoading(false);
         return;
     }
     try {
       await signInWithEmailAndPassword(auth, email, password);
       
-      toast({
-        title: "Admin Login Successful",
-        description: "Redirecting to the admin dashboard...",
-      });
+      toast.success("Admin Login Successful! Redirecting...");
 
       router.push("/admin/dashboard");
       
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "Please check your credentials and try again.",
-      });
+      toast.error(error.message || "Please check your credentials and try again.");
     } finally {
       setIsLoading(false);
     }

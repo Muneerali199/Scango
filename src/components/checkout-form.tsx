@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +6,7 @@ import { CreditCard, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -28,7 +29,6 @@ const formSchema = z.object({
 
 export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: CheckoutFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,12 +44,7 @@ export function CheckoutForm({ isOpen, onOpenChange, totalAmount, onCheckout }: 
     onCheckout();
     onOpenChange(false);
     form.reset();
-    toast({
-        title: "Payment Successful!",
-        description: `Your payment of $${totalAmount.toFixed(2)} has been processed.`,
-        variant: "default",
-        className: "bg-green-600 border-green-600 text-white",
-    });
+    toast.success(`Payment of $${totalAmount.toFixed(2)} successful!`);
   }
 
   return (

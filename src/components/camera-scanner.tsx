@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Camera, Upload, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "react-hot-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface CameraScannerProps {
@@ -19,18 +19,13 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     const getCameraPermission = async () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         console.error("Camera not supported by this browser.");
         setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: 'Unsupported Browser',
-          description: 'Your browser does not support camera access.',
-        });
+        toast.error('Your browser does not support camera access.');
         return;
       }
       try {
@@ -43,11 +38,7 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
       } catch (error) {
         console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings to use this app.',
-        });
+        toast.error('Please enable camera permissions in your browser settings.');
       }
     };
 
@@ -58,7 +49,7 @@ export default function CameraScanner({ onScan, disabled }: CameraScannerProps) 
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [toast]);
+  }, []);
 
   const captureFrame = useCallback(() => {
     if (!videoRef.current || !canvasRef.current || !hasCameraPermission) return;
