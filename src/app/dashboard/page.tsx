@@ -22,6 +22,7 @@ export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -39,11 +40,20 @@ export default function UserDashboard() {
 
     const storedWishlistIds = localStorage.getItem("wishlist");
     if (storedWishlistIds) {
-      const ids = new Set(JSON.parse(storedWishlistIds));
-      const wishlistProducts = allProducts.filter(p => ids.has(p.id));
-      setWishlist(wishlistProducts);
+      try {
+        const ids = new Set(JSON.parse(storedWishlistIds));
+        const wishlistProducts = allProducts.filter(p => ids.has(p.id));
+        setWishlist(wishlistProducts);
+      } catch (e) {
+        console.error("Failed to parse wishlist from localStorage", e);
+        localStorage.removeItem("wishlist");
+      }
     }
     
+    // In a real app, cart items would be fetched from a DB. Here we simulate it.
+    // For this example, we'll just show a static number. A real implementation would be more complex.
+    setCartItemCount(5); 
+
     return () => unsubscribe();
   }, [auth, router]);
 
@@ -97,9 +107,9 @@ export default function UserDashboard() {
                 <ShoppingBag className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">5</div>
+                <div className="text-2xl font-bold">{cartItemCount}</div>
                 <p className="text-xs text-muted-foreground">
-                    <Link href="/" className="underline hover:text-primary">View Cart</Link>
+                    <Link href="/" className="underline hover:text-primary">View Cart & Continue Shopping</Link>
                 </p>
                 </CardContent>
             </Card>

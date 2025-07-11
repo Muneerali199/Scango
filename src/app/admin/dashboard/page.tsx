@@ -50,9 +50,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user && user.email === 'admin@example.com') {
         setUser(user);
-      } else {
+      } else if (user) {
+        // Not an admin, redirect to user dashboard
+        router.push("/dashboard");
+      }
+      else {
+        // Not logged in, redirect to login
         router.push("/login");
       }
       setLoading(false);
@@ -69,7 +74,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
