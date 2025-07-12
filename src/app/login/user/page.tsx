@@ -36,7 +36,13 @@ export default function UserLoginPage() {
       }
       
     } catch (error: any) {
-      toast.error(error.message || "Please check your credentials and try again.");
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid credentials. Please check your email and password.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

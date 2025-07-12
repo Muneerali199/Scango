@@ -26,19 +26,27 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     
     try {
+      // Use the email from the input field for authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
       toast.success("Login Successful! Redirecting...");
 
+      // Check the email of the successfully signed-in user
       if (userCredential.user.email === 'admin@example.com') {
         router.push("/admin/dashboard");
       } else {
-        toast.error("Not an admin account. Redirecting to user dashboard.");
+        toast.error("This is not an admin account. Redirecting to the user dashboard.");
         router.push("/dashboard");
       }
       
     } catch (error: any) {
-      toast.error(error.message || "Please check your credentials and try again.");
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = "Invalid credentials. Please check your email and password.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
