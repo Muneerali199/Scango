@@ -81,17 +81,18 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.email === 'admin@example.com') {
-        setUser(user);
-        setLoading(false);
-      } else if (user) {
-        // Not an admin, redirect to user dashboard
-        router.push("/dashboard");
-      }
-      else {
-        // Not logged in, redirect to login
+      if (user) {
+        if (user.email === 'admin@example.com') {
+          setUser(user);
+        } else {
+          // If the user is logged in but not an admin, redirect them.
+          router.push("/dashboard");
+        }
+      } else {
+        // If no user is logged in, redirect to the admin login page.
         router.push("/login/admin");
       }
+      setLoading(false);
     });
     return () => unsubscribe();
   }, [auth, router]);
@@ -117,6 +118,15 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    // This can happen briefly before the redirect, so we show a loader.
+     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>

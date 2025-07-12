@@ -48,6 +48,8 @@ export default function UserDashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        // This page is for regular users.
+        // If an admin lands here, redirect them to the admin dashboard.
         if (user.email === 'admin@example.com') {
           router.push('/admin/dashboard');
         } else {
@@ -55,10 +57,15 @@ export default function UserDashboard() {
           setLoading(false);
         }
       } else {
+        // If no user is signed in, redirect to the user login page.
         router.push("/login/user");
       }
     });
 
+    return () => unsubscribe();
+  }, [auth, router]);
+  
+  useEffect(() => {
     const storedWishlistIds = localStorage.getItem("wishlist");
     if (storedWishlistIds) {
       try {
@@ -82,9 +89,7 @@ export default function UserDashboard() {
     }
 
     setOrders(mockOrders);
-
-    return () => unsubscribe();
-  }, [auth, router]);
+  }, []);
 
   const handleSignOut = async () => {
     try {
