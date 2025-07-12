@@ -83,3 +83,13 @@ Follow these instructions to get a copy of the project up and running on your lo
 Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
 
 You can start editing the main page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for details on our code of conduct, and the process for submitting pull requests to us.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
