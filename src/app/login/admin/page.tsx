@@ -15,7 +15,7 @@ import { toast } from "react-hot-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -24,11 +24,10 @@ export default function AdminLoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    if (email !== 'admin@example.com') {
-        toast.error("This login is for administrators only.");
-        setIsLoading(false);
-        return;
-    }
+    
+    // We can assume anyone attempting to log in here is an admin.
+    // The actual authorization should be handled by backend rules or user roles in a real app.
+    
     try {
       await signInWithEmailAndPassword(auth, email, password);
       
@@ -69,8 +68,6 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                readOnly
-                className="cursor-not-allowed bg-muted"
               />
             </div>
             <div className="grid gap-2">
