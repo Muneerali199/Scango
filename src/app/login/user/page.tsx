@@ -25,11 +25,15 @@ export default function UserLoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
       toast.success("Login Successful! Redirecting...");
 
-      router.push("/dashboard");
+      if (userCredential.user.email === 'admin@example.com') {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
       
     } catch (error: any) {
       toast.error(error.message || "Please check your credentials and try again.");

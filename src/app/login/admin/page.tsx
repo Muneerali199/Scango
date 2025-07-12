@@ -15,7 +15,7 @@ import { toast } from "react-hot-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -25,15 +25,17 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    // We can assume anyone attempting to log in here is an admin.
-    // The actual authorization should be handled by backend rules or user roles in a real app.
-    
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
-      toast.success("Admin Login Successful! Redirecting...");
+      toast.success("Login Successful! Redirecting...");
 
-      router.push("/admin/dashboard");
+      if (userCredential.user.email === 'admin@example.com') {
+        router.push("/admin/dashboard");
+      } else {
+        toast.error("Not an admin account. Redirecting to user dashboard.");
+        router.push("/dashboard");
+      }
       
     } catch (error: any) {
       toast.error(error.message || "Please check your credentials and try again.");
