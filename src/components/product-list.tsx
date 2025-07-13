@@ -38,7 +38,7 @@ const ProductList: FC<ProductListProps> = ({ products, onAddToCart, wishlist, on
 
   return (
     <div>
-      {products.length > 0 && (
+      {products.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
             <ProductCard
@@ -49,6 +49,11 @@ const ProductList: FC<ProductListProps> = ({ products, onAddToCart, wishlist, on
               onToggleWishlist={onToggleWishlist}
             />
           ))}
+        </div>
+      ) : (
+        <div className="text-center py-16 text-muted-foreground">
+          <p className="text-xl font-semibold">No products found.</p>
+          <p>Try adjusting your filters.</p>
         </div>
       )}
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FC } from "react";
@@ -7,16 +8,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import type { ProductRecommendationOutput } from "@/ai/flows/product-recommendation";
-import { products } from "@/data/products";
 import type { Product } from "@/lib/types";
 
 interface AIRecommendationsProps {
   recommendations: ProductRecommendationOutput["recommendations"];
   isLoading: boolean;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: { productId: string; name: string; reason: string; }) => void;
+  allProducts: Product[];
 }
 
-const AIRecommendations: FC<AIRecommendationsProps> = ({ recommendations, isLoading, onAddToCart }) => {
+const AIRecommendations: FC<AIRecommendationsProps> = ({ recommendations, isLoading, onAddToCart, allProducts }) => {
   if (isLoading) {
     return (
       <div className="mt-12">
@@ -45,7 +46,7 @@ const AIRecommendations: FC<AIRecommendationsProps> = ({ recommendations, isLoad
       <Carousel opts={{ align: "start", loop: true }} className="w-full">
         <CarouselContent>
           {recommendations.map((rec) => {
-            const productDetails = products.find(p => p.id === rec.productId);
+            const productDetails = allProducts.find(p => String(p.id) === rec.productId);
             if (!productDetails) return null;
 
             return (
@@ -60,7 +61,7 @@ const AIRecommendations: FC<AIRecommendationsProps> = ({ recommendations, isLoad
                       <p className="text-sm text-muted-foreground">{rec.reason}</p>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" size="sm" onClick={() => onAddToCart(productDetails)}>
+                      <Button className="w-full" size="sm" onClick={() => onAddToCart(rec)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add to Cart
                       </Button>

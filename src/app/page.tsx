@@ -11,79 +11,79 @@ import Link from "next/link";
 
 const products = [
     {
-      title: "Electronics & Gadgets",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Mens Casual Premium Slim Fit T-Shirts",
+      link: "/store/2",
+      thumbnail: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
     },
     {
-      title: "Fashion & Apparel",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Fjallraven - Foldsack No. 1 Backpack",
+      link: "/store/1",
+      thumbnail: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"
     },
     {
-      title: "Home & Garden",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Mens Cotton Jacket",
+      link: "/store/3",
+      thumbnail: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"
     },
     {
-      title: "Sports & Fitness",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Mens Casual Slim Fit",
+      link: "/store/4",
+      thumbnail: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg"
     },
     {
-      title: "Beauty & Personal Care",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet",
+      link: "/store/5",
+      thumbnail: "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_.jpg"
     },
     {
-      title: "Books & Education",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/159751/book-address-book-learning-learn-159751.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Solid Gold Petite Micropave",
+      link: "/store/6",
+      thumbnail: "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg"
     },
     {
-      title: "Automotive",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/3729464/pexels-photo-3729464.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "White Gold Plated Princess",
+      link: "/store/7",
+      thumbnail: "https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3_.jpg"
     },
     {
-      title: "Food & Beverages",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Pierced Owl Rose Gold Plated Stainless Steel Double",
+      link: "/store/8",
+      thumbnail: "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg"
     },
     {
-      title: "Toys & Games",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/1148998/pexels-photo-1148998.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "WD 2TB Elements Portable External Hard Drive - USB 3.0",
+      link: "/store/9",
+      thumbnail: "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg"
     },
     {
-      title: "Health & Wellness",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/40751/running-runner-long-distance-fitness-40751.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "SanDisk SSD PLUS 1TB Internal SSD - SATA III 6 Gb/s",
+      link: "/store/10",
+      thumbnail: "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg"
     },
     {
-      title: "Pet Supplies",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Silicon Power 256GB SSD 3D NAND A55 SLC Cache Performance Boost SATA III 2.5",
+      link: "/store/11",
+      thumbnail: "https://fakestoreapi.com/img/71kWymZ+c+L._AC_SX679_.jpg"
     },
     {
-      title: "Office Supplies",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/273230/pexels-photo-273230.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "WD 4TB Gaming Drive Works with Playstation 4 Portable External Hard Drive",
+      link: "/store/12",
+      thumbnail: "https://fakestoreapi.com/img/61mtL65D4cL._AC_SX679_.jpg"
     },
     {
-      title: "Jewelry & Accessories",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/1721934/pexels-photo-1721934.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Acer SB220Q bi 21.5 inches Full HD (1920 x 1080) IPS Ultra-Thin",
+      link: "/store/13",
+      thumbnail: "https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg"
     },
     {
-      title: "Musical Instruments",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "Samsung 49-Inch CHG90 144Hz Curved Gaming Monitor",
+      link: "/store/14",
+      thumbnail: "https://fakestoreapi.com/img/81Zt42ioCgL._AC_SX679_.jpg"
     },
     {
-      title: "Travel & Luggage",
-      link: "/store",
-      thumbnail: "https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg?auto=compress&cs=tinysrgb&w=800"
+      title: "BIYLACLESEN Women's 3-in-1 Snowboard Jacket Winter Coats",
+      link: "/store/15",
+      thumbnail: "https://fakestoreapi.com/img/51Y5NI-I5jL._AC_UX679_.jpg"
     }
   ];
 

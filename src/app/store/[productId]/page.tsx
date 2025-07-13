@@ -5,16 +5,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Loader2, PlusCircle, Heart, Star, CheckCircle } from "lucide-react";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, onSnapshot, updateDoc, increment, collection, query, where, limit, getDocs } from "firebase/firestore";
+import { ArrowLeft, PlusCircle, Heart, Star, CheckCircle } from "lucide-react";
 import type { Product, CartItem } from "@/lib/types";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import ProductCard from "@/components/product-card";
 
 export default function ProductDetailPage() {
@@ -27,46 +24,33 @@ export default function ProductDetailPage() {
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
-  // Increment view count
-  useEffect(() => {
-    if (productId) {
-      const docRef = doc(db, "products", productId);
-      updateDoc(docRef, {
-        views: increment(1)
-      }).catch(err => console.error("Failed to increment view count", err));
-    }
-  }, [productId]);
-
-  // Fetch product data
+  // Fetch product data from Fake Store API
   useEffect(() => {
     if (productId) {
       setIsLoading(true);
-      const docRef = doc(db, "products", productId);
-      const unsubscribe = onSnapshot(docRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const productData = { id: docSnap.id, ...docSnap.data() } as Product;
-          setProduct(productData);
+      const fetchProduct = async () => {
+        try {
+          const res = await fetch(`https://fakestoreapi.com/products/${productId}`);
+          const productData: Product = await res.json();
+          setProduct({ ...productData, name: productData.title });
 
           // Fetch related products from the same category
-          const q = query(
-            collection(db, "products"), 
-            where("category", "==", productData.category),
-            where("id", "!=", productId),
-            limit(4)
-          );
-          
-          getDocs(q).then((snapshot) => {
-            const related = snapshot.docs.map(d => ({id: d.id, ...d.data()}) as Product);
-            setRelatedProducts(related);
-          });
+          if (productData.category) {
+            const relatedRes = await fetch(`https://fakestoreapi.com/products/category/${encodeURIComponent(productData.category)}?limit=5`);
+            const allRelated: Product[] = await relatedRes.json();
+            // Filter out the current product and take 4
+            const related = allRelated.filter(p => p.id !== productData.id).slice(0, 4);
+            setRelatedProducts(related.map(p => ({ ...p, name: p.title })));
+          }
 
-        } else {
-          console.log("No such document!");
-          // Handle not found, maybe redirect
+        } catch (error) {
+          console.error("Failed to fetch product:", error);
+          toast.error("Could not load product details.");
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
-      });
-      return () => unsubscribe();
+      };
+      fetchProduct();
     }
   }, [productId]);
 
@@ -101,7 +85,7 @@ export default function ProductDetailPage() {
       triggerStorageUpdate();
       return newItems;
     });
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.title} added to cart!`);
   }, []);
 
   const handleToggleWishlist = useCallback((productId: string, productName: string) => {
@@ -121,7 +105,7 @@ export default function ProductDetailPage() {
   }, []);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const isWishlisted = product ? wishlist.has(product.id) : false;
+  const isWishlisted = product ? wishlist.has(String(product.id)) : false;
 
   if (isLoading || !product) {
     return (
@@ -154,28 +138,26 @@ export default function ProductDetailPage() {
             Back to Store
           </Link>
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-            <div className="relative w-full aspect-square overflow-hidden rounded-xl shadow-lg">
+            <div className="relative w-full aspect-square overflow-hidden rounded-xl shadow-lg bg-white">
                 <Image
                     src={product.image}
-                    alt={product.name}
+                    alt={product.title}
                     fill
-                    className="object-cover"
+                    className="object-contain p-8"
                     data-ai-hint={product.data_ai_hint}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
             </div>
             <div className="flex flex-col justify-center">
-                <Badge variant="secondary" className="w-fit mb-2">{product.category}</Badge>
-                <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">{product.name}</h1>
+                <Badge variant="secondary" className="w-fit mb-2 capitalize">{product.category}</Badge>
+                <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">{product.title}</h1>
                 <div className="flex items-center gap-2 mt-2 mb-4">
                     <div className="flex text-yellow-400">
-                        <Star className="h-5 w-5 fill-current" />
-                        <Star className="h-5 w-5 fill-current" />
-                        <Star className="h-5 w-5 fill-current" />
-                        <Star className="h-5 w-5 fill-current" />
-                        <Star className="h-5 w-5" />
+                        {Array.from({ length: 5 }).map((_, i) => (
+                           <Star key={i} className={cn("h-5 w-5", i < Math.round(product.rating.rate) ? 'fill-current' : 'fill-transparent stroke-current')} />
+                        ))}
                     </div>
-                    <span className="text-muted-foreground text-sm">(124 reviews)</span>
+                    <span className="text-muted-foreground text-sm">({product.rating.count} reviews)</span>
                 </div>
                 <p className="text-3xl font-extrabold text-primary mb-6">${product.price.toFixed(2)}</p>
                 <p className="text-muted-foreground leading-relaxed mb-6">{product.description}</p>
@@ -183,7 +165,7 @@ export default function ProductDetailPage() {
                     <Button size="lg" className="flex-1" onClick={() => handleAddToCart(product)}>
                         <PlusCircle className="mr-2 h-5 w-5" /> Add to Cart
                     </Button>
-                    <Button size="lg" variant={isWishlisted ? "destructive" : "outline"} className="w-full sm:w-auto" onClick={() => handleToggleWishlist(product.id, product.name)}>
+                    <Button size="lg" variant={isWishlisted ? "destructive" : "outline"} className="w-full sm:w-auto" onClick={() => handleToggleWishlist(String(product.id), product.title)}>
                         <Heart className="mr-2 h-5 w-5" /> {isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                     </Button>
                 </div>

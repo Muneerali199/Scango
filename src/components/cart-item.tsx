@@ -32,10 +32,10 @@ const CartItemCard: FC<CartItemProps> = ({ item, onUpdate, onRemove }) => {
   return (
     <div className="flex items-start gap-4 py-4">
       <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
-        <Image src={item.image} alt={item.name} fill className="object-cover" data-ai-hint={item.data_ai_hint} />
+        <Image src={item.image} alt={item.title} fill className="object-contain" data-ai-hint={item.data_ai_hint} />
       </div>
       <div className="flex-grow">
-        <h3 className="font-semibold">{item.name}</h3>
+        <h3 className="font-semibold">{item.title}</h3>
         <p className="text-lg font-bold text-primary">${totalPrice.toFixed(2)}</p>
         <div className="mt-2 flex items-center gap-4">
           <div className="flex items-center gap-1 rounded-md border">
@@ -59,7 +59,7 @@ const CartItemCard: FC<CartItemProps> = ({ item, onUpdate, onRemove }) => {
           </Select>
         </div>
       </div>
-      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemove(item.id)}>
+      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemove(String(item.id))}>
         <Trash2 className="h-5 w-5" />
       </Button>
     </div>

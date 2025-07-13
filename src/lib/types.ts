@@ -8,16 +8,22 @@ export const qualityMultipliers: Record<ProductQuality, number> = {
   Premium: 1.5,
 };
 
+// Updated Product type to match fakestoreapi.com structure
 export interface Product {
-  id: string;
-  name: string;
+  id: number;
+  title: string;
+  price: number;
   description: string;
-  price: number; // base price for 'Standard' quality
-  image: string;
   category: string;
+  image: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
+  // The 'name' property is added for compatibility with cart logic, which expects a 'name' field.
+  // It will be populated from the 'title' field of the API response.
+  name: string; 
   data_ai_hint?: string;
-  views?: number;
-  timestamp: Date;
 }
 
 export interface CartItem extends Product {
