@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { Loader2, LogOut, ShoppingBag, Heart, Package, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -48,11 +48,11 @@ export default function UserDashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // This page is for regular users.
-        // If an admin lands here, redirect them to the admin dashboard.
-        if (user.email === 'admin@example.com') {
+        // If the user is an admin, redirect them to the admin dashboard.
+        if (user.email === adminEmail) {
           router.push('/admin/dashboard');
         } else {
+          // Otherwise, it's a regular user.
           setUser(user);
           setLoading(false);
         }
@@ -102,7 +102,7 @@ export default function UserDashboard() {
 
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

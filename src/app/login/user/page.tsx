@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ export default function UserLoginPage() {
       
       toast.success("Login Successful! Redirecting...");
 
-      if (userCredential.user.email === 'admin@example.com') {
+      if (userCredential.user.email === adminEmail) {
         router.push("/admin/dashboard");
       } else {
         router.push("/dashboard");

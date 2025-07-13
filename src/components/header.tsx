@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import { getAuth, onAuthStateChanged, signOut, type User as FirebaseUser } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -40,7 +40,7 @@ const Header: FC<HeaderProps> = ({ cartCount, onCartClick }) => {
     }
   };
 
-  const dashboardUrl = user?.email === 'admin@example.com' ? '/admin/dashboard' : '/dashboard';
+  const dashboardUrl = user?.email === adminEmail ? '/admin/dashboard' : '/dashboard';
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">

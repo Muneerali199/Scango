@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { toast } from "react-hot-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState(adminEmail || "");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -26,13 +26,11 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     
     try {
-      // Use the email from the input field for authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
       toast.success("Login Successful! Redirecting...");
 
-      // Check the email of the successfully signed-in user
-      if (userCredential.user.email === 'admin@example.com') {
+      if (userCredential.user.email === adminEmail) {
         router.push("/admin/dashboard");
       } else {
         toast.error("This is not an admin account. Redirecting to the user dashboard.");

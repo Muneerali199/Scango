@@ -13,4 +13,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-export { firebaseApp };
+const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+
+if (!adminEmail) {
+  console.warn("WARNING: NEXT_PUBLIC_ADMIN_EMAIL is not set in your environment. Admin functionality will be limited.");
+}
+
+
+export { firebaseApp, adminEmail };

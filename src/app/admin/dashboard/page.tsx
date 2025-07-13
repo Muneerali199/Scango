@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
-import { firebaseApp } from "@/lib/firebase";
+import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { Loader2, PlusCircle, LogOut, Users, DollarSign, BarChart3, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -82,10 +82,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        if (user.email === 'admin@example.com') {
+        // If a user is logged in, check if they are the admin.
+        if (user.email === adminEmail) {
           setUser(user);
         } else {
-          // If the user is logged in but not an admin, redirect them.
+          // If the logged-in user is not an admin, redirect them.
           router.push("/dashboard");
         }
       } else {
