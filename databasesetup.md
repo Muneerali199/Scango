@@ -51,7 +51,8 @@ This collection will store all the product information. Each document in this co
       "category": "Electronics",
       "image": "https://placehold.co/600x400.png",
       "data_ai_hint": "wireless headphones",
-      "views": 0
+      "views": 0,
+      "timestamp": "2024-07-31T10:00:00.000Z"
     }
     ```
 
@@ -62,7 +63,7 @@ This collection will store information about your users, linked by their Firebas
 -   **Collection:** `users`
 -   **Document ID:** The user's UID from Firebase Auth.
 -   **Document Data:**
-    -   This is a great place to store user-specific information, like their cart and wishlist, instead of `localStorage`.
+    -   This is a great place to store user-specific information, like their cart and wishlist.
     -   **Subcollection for Cart:**
         -   **Collection:** `cart`
         -   **Document ID:** Product ID
@@ -101,53 +102,39 @@ These rules ensure:
 
 ## 5. Composite Indexes for Sorting and Filtering
 
-**VERY IMPORTANT:** Firestore requires composite indexes for queries that filter on one field and sort on another. Without them, your queries will fail.
+**VERY IMPORTANT:** Firestore requires composite indexes for queries that filter on one field and sort on another. Without them, your queries will fail. The app will show an error in the console with a link to create the missing index.
 
 1.  Go to the **Firestore Database** section in your Firebase Console.
 2.  Click on the **Indexes** tab.
 3.  Click **Create Index**.
-4.  Set up the following indexes. **The field order matters!**
+4.  Set up the following indexes. **The field order and query scope are critical!**
 
     *   **Index 1: Filter by Category, Sort by Price (Ascending)**
-        *   Collection: `products`
-        *   Fields:
+        *   Collection ID: `products`
+        *   Fields to index:
             1.  `category` (Ascending)
             2.  `price` (Ascending)
         *   Query Scope: Collection
 
     *   **Index 2: Filter by Category, Sort by Price (Descending)**
-        *   Collection: `products`
-        *   Fields:
+        *   Collection ID: `products`
+        *   Fields to index:
             1.  `category` (Ascending)
             2.  `price` (Descending)
         *   Query Scope: Collection
     
     *   **Index 3: Filter by Category, Sort by Views (Popularity)**
-        *   Collection: `products`
-        *   Fields:
+        *   Collection ID: `products`
+        *   Fields to index:
             1.  `category` (Ascending)
             2.  `views` (Descending)
         *   Query Scope: Collection
             
     *   **Index 4: Filter by Category, Sort by Name**
-        *   Collection: `products`
-        *   Fields:
+        *   Collection ID: `products`
+        *   Fields to index:
             1.  `category` (Ascending)
             2.  `name` (Ascending)
         *   Query Scope: Collection
 
 After you create these, it may take a few minutes for them to be enabled. Queries that need these indexes will fail until they are ready. You can monitor the status in the Firebase console.
-
-## Next Steps: Implementation in Code
-
-To use Firestore in the app, you will need to:
-
-1.  **Install the Firebase SDK:**
-    ```bash
-    npm install firebase
-    ```
-    *(This is already done in the project)*
-
-2.  **Import and use Firestore functions:**
-    -   In files where you need database access, import Firestore functions: `import { getFirestore, collection, getDocs, doc, setDoc } from "firebase/firestore";`
-    -   You would replace calls to `localStorage` with async calls to Firestore to fetch and update data.
