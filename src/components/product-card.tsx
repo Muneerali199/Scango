@@ -20,14 +20,14 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
   const isWishlisted = wishlist.has(product.id);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg group">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl group border-transparent hover:border-primary/20">
       <CardHeader className="p-0 relative">
-        <div className="relative h-48 w-full">
+        <div className="relative h-64 w-full">
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
             data-ai-hint={product.data_ai_hint}
           />
         </div>
@@ -35,7 +35,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
           size="icon"
           variant="secondary"
           className={cn(
-            "absolute top-2 right-2 rounded-full h-9 w-9 transition-all",
+            "absolute top-3 right-3 rounded-full h-9 w-9 transition-all z-10",
             isWishlisted ? "bg-red-500/90 text-white hover:bg-red-500" : "bg-background/70 hover:bg-background"
           )}
           onClick={(e) => {
@@ -49,10 +49,10 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
       </CardHeader>
       <CardContent className="flex-grow p-4">
         <CardTitle className="mb-2 text-lg font-semibold">{product.name}</CardTitle>
-        <p className="text-sm text-muted-foreground">{product.description}</p>
+        <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
       </CardContent>
       <CardFooter className="flex items-center justify-between p-4 pt-0">
-        <p className="text-xl font-bold text-primary">
+        <p className="text-2xl font-bold text-primary">
           ${product.price.toFixed(2)}
         </p>
         <Button onClick={() => onAddToCart(product)} size="sm">

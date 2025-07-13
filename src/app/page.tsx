@@ -13,8 +13,7 @@ import { CheckoutForm } from "@/components/checkout-form";
 import { products as initialProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
-import { ShoppingBag } from "lucide-react";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 
 export default function Home() {
@@ -100,6 +99,7 @@ export default function Home() {
   }
 
   const handleAddToCart = useCallback((product: Product) => {
+    let wasAdded = false;
     setCartItems((prevItems) => {
       let newItems: CartItem[];
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -109,26 +109,31 @@ export default function Home() {
         );
       } else {
         newItems = [...prevItems, { ...product, quantity: 1, quality: "Standard" }];
+        wasAdded = true;
       }
       localStorage.setItem('cart', JSON.stringify(newItems));
       triggerStorageUpdate();
       return newItems;
     });
-    toast.success(`${product.name} added to cart!`);
+    if (wasAdded) {
+       toast.success(`${product.name} added to cart!`);
+    }
   }, []);
 
   const handleToggleWishlist = useCallback((productId: string, productName: string) => {
     const newWishlist = new Set(wishlist);
+    let isWishlisted;
     if (newWishlist.has(productId)) {
       newWishlist.delete(productId);
-      toast.success(`${productName} removed from wishlist.`);
+      isWishlisted = false;
     } else {
       newWishlist.add(productId);
-      toast.success(`${productName} added to wishlist!`);
+      isWishlisted = true;
     }
     setWishlist(newWishlist);
     localStorage.setItem("wishlist", JSON.stringify(Array.from(newWishlist)));
     triggerStorageUpdate();
+    toast.success(isWishlisted ? `${productName} added to wishlist!` : `${productName} removed from wishlist.`);
   }, [wishlist]);
 
   const handleRemoveFromCart = useCallback((itemId: string) => {
