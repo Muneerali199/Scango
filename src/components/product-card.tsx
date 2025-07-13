@@ -4,10 +4,11 @@
 import Image from "next/image";
 import { PlusCircle, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { Product } from "@/lib/types";
 import type { FC } from "react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: Product;
@@ -20,17 +21,19 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
   const isWishlisted = wishlist.has(product.id);
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl group border-transparent hover:border-primary/20">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl group border-transparent hover:border-primary/20 h-full">
       <CardHeader className="p-0 relative">
-        <div className="relative h-64 w-full">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            data-ai-hint={product.data_ai_hint}
-          />
-        </div>
+        <Link href={`/store/${product.id}`} className="block">
+            <div className="relative h-64 w-full">
+            <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                data-ai-hint={product.data_ai_hint}
+            />
+            </div>
+        </Link>
         <Button
           size="icon"
           variant="secondary"
@@ -39,7 +42,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
             isWishlisted ? "bg-red-500/90 text-white hover:bg-red-500" : "bg-background/70 hover:bg-background"
           )}
           onClick={(e) => {
-            e.preventDefault();
+            e.stopPropagation();
             onToggleWishlist(product.id, product.name);
           }}
         >
@@ -47,19 +50,23 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
           <span className="sr-only">Toggle Wishlist</span>
         </Button>
       </CardHeader>
-      <CardContent className="flex-grow p-4">
-        <CardTitle className="mb-2 text-lg font-semibold">{product.name}</CardTitle>
-        <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between p-4 pt-0">
-        <p className="text-2xl font-bold text-primary">
-          ${product.price.toFixed(2)}
-        </p>
-        <Button onClick={() => onAddToCart(product)} size="sm">
+      <Link href={`/store/${product.id}`} className="flex flex-col flex-grow">
+        <CardContent className="flex-grow p-4">
+            <CardTitle className="mb-2 text-lg font-semibold leading-snug hover:text-primary transition-colors">{product.name}</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground line-clamp-2">{product.description}</CardDescription>
+        </CardContent>
+        <CardFooter className="flex items-center justify-between p-4 pt-0 mt-auto">
+            <p className="text-2xl font-bold text-primary">
+            ${product.price.toFixed(2)}
+            </p>
+        </CardFooter>
+      </Link>
+      <div className="p-4 pt-0">
+         <Button onClick={(e) => { e.stopPropagation(); onAddToCart(product); }} size="sm" className="w-full">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
-      </CardFooter>
+      </div>
     </Card>
   );
 };

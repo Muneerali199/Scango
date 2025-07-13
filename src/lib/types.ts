@@ -15,6 +15,7 @@ export interface Product {
   image: string;
   category: string;
   data_ai_hint?: string;
+  views?: number;
 }
 
 export interface CartItem extends Product {

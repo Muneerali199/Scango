@@ -15,12 +15,16 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { db } from "@/lib/firebase";
-import { collection, query, onSnapshot } from "firebase/firestore";
+import { collection, query, onSnapshot, orderBy, limit } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import ProductCard from "@/components/product-card";
+import { Flame } from "lucide-react";
 
 
 export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -33,11 +37,14 @@ export default function StorePage() {
 
 
   useEffect(() => {
-    // Real-time query to get products
+    // Real-time query to get all products
     const q = query(collection(db, "products"));
+    // Real-time query for trending products
+    const trendingQuery = query(collection(db, "products"), orderBy("views", "desc"), limit(10));
+    
     setIsLoadingProducts(true);
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribeProducts = onSnapshot(q, (snapshot) => {
       const productsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data()
@@ -50,7 +57,18 @@ export default function StorePage() {
         setIsLoadingProducts(false);
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    const unsubscribeTrending = onSnapshot(trendingQuery, (snapshot) => {
+      const trendingData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Product[];
+      setTrendingProducts(trendingData);
+    });
+
+    return () => {
+        unsubscribeProducts();
+        unsubscribeTrending();
+    };
   }, []);
 
   useEffect(() => {
@@ -95,12 +113,6 @@ export default function StorePage() {
     window.dispatchEvent(new Event('storage'));
   };
 
-  const updateCart = (newCartItems: CartItem[]) => {
-      setCartItems(newCartItems);
-      localStorage.setItem("cart", JSON.stringify(newCartItems));
-      triggerStorageUpdate();
-  }
-
   const handleAddToCart = useCallback((product: Product) => {
     let wasAdded = false;
     setCartItems((prevItems) => {
@@ -138,15 +150,6 @@ export default function StorePage() {
     triggerStorageUpdate();
     toast.success(isWishlisted ? `${productName} added to wishlist!` : `${productName} removed from wishlist.`);
   }, [wishlist]);
-
-  const handleRemoveFromCart = useCallback((itemId: string) => {
-    setCartItems((prevItems) => {
-        const newItems = prevItems.filter((item) => item.id !== itemId);
-        localStorage.setItem('cart', JSON.stringify(newItems));
-        triggerStorageUpdate();
-        return newItems;
-    });
-  }, []);
 
   const handleUpdateCartItem = useCallback((updatedItem: CartItem) => {
     setCartItems((prevItems) => {
@@ -205,7 +208,7 @@ export default function StorePage() {
       <ShoppingCart
         items={cartItems}
         onUpdate={handleUpdateCartItem}
-        onRemove={handleRemoveFromCart}
+        onRemove={handleClearCart}
         onCheckout={() => {
             setIsCartOpen(false);
             setIsCheckoutOpen(true);
@@ -220,6 +223,33 @@ export default function StorePage() {
       <div className="container mx-auto flex-1">
         <main className="grid flex-1 gap-8 px-4 py-8 md:grid-cols-1 lg:grid-cols-[1fr_380px] lg:gap-12">
             <div className="flex flex-col gap-8">
+               {trendingProducts.length > 0 && (
+                 <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                        <Flame className="h-8 w-8 text-destructive" />
+                        <h2 className="text-3xl font-bold tracking-tight">Trending Now</h2>
+                    </div>
+                    <Carousel opts={{ align: "start", loop: false }} className="w-full">
+                        <CarouselContent>
+                        {trendingProducts.map((product) => (
+                            <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                                <div className="p-1 h-full">
+                                    <ProductCard
+                                        product={product}
+                                        onAddToCart={handleAddToCart}
+                                        wishlist={wishlist}
+                                        onToggleWishlist={handleToggleWishlist}
+                                    />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="ml-12" />
+                        <CarouselNext className="mr-12" />
+                    </Carousel>
+                </div>
+               )}
+
                 <div>
                   <h1 className="mb-2 text-3xl font-bold tracking-tight sm:text-4xl">Our Products</h1>
                   <p className="text-lg text-muted-foreground">Browse our curated selection of high-quality goods.</p>
@@ -236,6 +266,7 @@ export default function StorePage() {
                     ))}
                   </div>
                 </div>
+
                 {isLoadingProducts ? (
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {Array.from({ length: 8 }).map((_, i) => (

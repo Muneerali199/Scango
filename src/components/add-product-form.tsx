@@ -15,11 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Product } from "@/lib/types";
+import { db } from "@/lib/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 interface AddProductFormProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onProductAdded: (product: Product) => void;
 }
 
 const formSchema = z.object({
@@ -30,7 +31,7 @@ const formSchema = z.object({
   image: z.string().url({ message: "Please enter a valid image URL." }),
 });
 
-export function AddProductForm({ isOpen, onOpenChange, onProductAdded }: AddProductFormProps) {
+export function AddProductForm({ isOpen, onOpenChange }: AddProductFormProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,22 +39,26 @@ export function AddProductForm({ isOpen, onOpenChange, onProductAdded }: AddProd
     defaultValues: { name: "", description: "", price: 0, category: "", image: "" },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsProcessing(true);
     
-    const newProduct: Product = {
-        id: `prod_${Date.now()}`,
+    const newProductData = {
         ...values,
+        views: 0,
         data_ai_hint: values.name.toLowerCase().split(" ").slice(0, 2).join(" ")
     };
-    
-    onProductAdded(newProduct);
-    
-    toast.success(`Product "${values.name}" added successfully!`);
-    
-    setIsProcessing(false);
-    onOpenChange(false);
-    form.reset();
+
+    try {
+        await addDoc(collection(db, "products"), newProductData);
+        toast.success(`Product "${values.name}" added successfully!`);
+        onOpenChange(false);
+        form.reset();
+    } catch (error) {
+        console.error("Error adding product: ", error);
+        toast.error("Failed to add product. Please try again.");
+    } finally {
+        setIsProcessing(false);
+    }
   }
 
   return (
