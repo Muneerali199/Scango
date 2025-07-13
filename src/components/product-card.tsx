@@ -23,8 +23,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl group border-transparent hover:border-primary/20 h-full">
       <CardHeader className="p-0 relative">
-        <Link href={`/store/${product.id}`} className="block">
-            <div className="relative h-64 w-full">
+        <Link href={`/store/${product.id}`} className="block relative h-64 w-full">
             <Image
                 src={product.image}
                 alt={product.name}
@@ -32,7 +31,6 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart, wishlist, onT
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 data-ai-hint={product.data_ai_hint}
             />
-            </div>
         </Link>
         <Button
           size="icon"
