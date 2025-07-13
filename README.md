@@ -18,7 +18,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
     -   Health and safety information, including harmful ingredients.
     -   Daily discounts and estimated expiry dates.
     -   Suggestions for better, healthier, or greener alternatives.
--   **🛍️ Modern E-commerce UI:** A beautiful and responsive interface built with ShadCN UI and Tailwind CSS.
+-   **🛍️ Modern E-commerce UI:** A beautiful and responsive interface built with ShadCN UI and Tailwind CSS, fetching live product data from a public API.
 -   **🧠 AI-Powered Recommendations:** Utilizes Genkit to provide intelligent product suggestions based on the user's shopping cart contents.
 -   **🎨 Stunning Landing Page:** A dynamic, parallax hero section to welcome users.
 -   **🔍 Dynamic Product Filtering & Sorting:** Easily filter products by category and sort by name or price to find exactly what you need.
@@ -27,7 +27,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
 -   **☀️ Dark & 🌑 Light Modes:** A theme toggle allows users to switch between a sleek dark mode and a clean light mode.
 -   **💳 Secure Checkout Simulation:** A modal-based checkout form for a seamless payment experience.
 -   **❤️ Wishlist Functionality:** Users can save their favorite products to a persistent wishlist.
--   **📦 Admin Product Management:** Admins can add new products to the store directly from their dashboard.
+-   **📦 Admin Product Management:** Admins can add new products to the store directly from their dashboard, with changes appearing in real-time.
 
 ## 🖼️ Screenshots
 
@@ -55,7 +55,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
 -   **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
 -   **Animations:** [Framer Motion](https://www.framer.com/motion/)
 -   **Generative AI:** [Genkit](https://firebase.google.com/docs/genkit) (for product analysis and recommendations)
--   **Database:** [Firebase Firestore](https://firebase.google.com/docs/firestore)
+-   **Database:** Hybrid model - [Fake Store API](https://fakestoreapi.com/) for the initial product catalog and [Firebase Firestore](https://firebase.google.com/docs/firestore) for admin-added products and user data.
 -   **Icons:** [Lucide React](https://lucide.dev/)
 -   **Authentication:** [Firebase Auth](https://firebase.google.com/docs/auth)
 
@@ -69,7 +69,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 -   Node.js (v18 or later)
 -   npm or yarn
--   A Firebase project with Firestore enabled. See [databasesetup.md](databasesetup.md) for details.
+-   A Firebase project with Firestore and Authentication enabled. See [databasesetup.md](databasesetup.md) for details.
 
 ### Installation & Running
 
@@ -99,19 +99,12 @@ Follow these instructions to get a copy of the project up and running on your lo
     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
     ```
 
-4.  **Seed the Database (One-time setup):**
-    To populate your Firestore database with initial product data, run the following command. You only need to do this once.
-
-    ```bash
-    npm run db:seed
-    ```
-
-5.  **Run the development server:**
+4.  **Run the development server:**
     ```bash
     npm run dev
     ```
 
-Open [http://localhost:9002](http://localhost:9002) with your browser to see the result.
+Open [http://localhost:9002](http://localhost:9002) with your browser to see the result. The product catalog is fetched automatically from a live API, so no database seeding is required to get started!
 
 ## 🤝 Contributing
 
