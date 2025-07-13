@@ -1,0 +1,21 @@
+Please add your product images to this directory.
+
+Make sure the filenames match the 'image' path in `src/data/products.ts`.
+
+For example, for the 'AURA Wireless Headphones', the file should be named 'headphones.png'.
+
+Example filenames:
+- headphones.png
+- smartwatch.png
+- mouse.png
+- power-bank.png
+- tumbler.png
+- coffee-machine.png
+- backpack.png
+- jacket.png
+- coffee-press.png
+- book-catalyst.png
+- sneakers.png
+- book-thriller.png
+
+You can delete this text file once you have added your images.
