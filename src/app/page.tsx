@@ -6,6 +6,7 @@ import React from "react";
 import { HeroParallax } from "@/components/ui/hero-parallax";
 import { motion } from "framer-motion";
 import { ShoppingCart, Scan, Zap, Shield, Star, ArrowRight, Smartphone, Camera } from "lucide-react";
+import Link from "next/link";
 
 
 const products = [
@@ -112,19 +113,19 @@ const Features = () => {
   ];
 
   return (
-    <section className="py-24 bg-gray-50 dark:bg-gray-900/50">
+    <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-900/50">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Why Choose ScanGo?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Experience the future of shopping with cutting-edge technology that puts savings in your hands
           </p>
         </motion.div>
@@ -162,7 +163,7 @@ const Stats = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
+    <section className="py-16 md:py-24 bg-gradient-to-r from-blue-600 to-purple-600">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
@@ -174,8 +175,8 @@ const Stats = () => {
               viewport={{ once: true }}
               className="text-center text-white"
             >
-              <div className="text-4xl md:text-6xl font-bold mb-2">{stat.number}</div>
-              <div className="text-lg text-blue-100">{stat.label}</div>
+              <div className="text-4xl md:text-5xl font-bold mb-2">{stat.number}</div>
+              <div className="text-base md:text-lg text-blue-100">{stat.label}</div>
             </motion.div>
           ))}
         </div>
@@ -208,16 +209,16 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="py-24 bg-white dark:bg-black">
+    <section className="py-16 md:py-24 bg-white dark:bg-black">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             What Our Users Say
           </h2>
         </motion.div>
@@ -242,7 +243,7 @@ const Testimonials = () => {
                 <img
                   src={testimonial.avatar}
                   alt={testimonial.name}
-                  className="w-12 h-12 rounded-full mr-4"
+                  className="w-12 h-12 rounded-full mr-4 object-cover"
                 />
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">{testimonial.name}</div>
@@ -260,7 +261,7 @@ const Testimonials = () => {
 // CTA Section
 const CTA = () => {
   return (
-    <section className="py-24 bg-white dark:bg-gray-900">
+    <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -268,10 +269,10 @@ const CTA = () => {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Ready to Start Saving?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">
             Join millions of smart shoppers who use ScanGo to find the best deals
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -315,15 +316,15 @@ const Footer = () => {
               The smartest way to shop. Scan, compare, and save on millions of products worldwide.
             </p>
             <div className="flex space-x-4">
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
+              <Link href="#" className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
                 <span className="text-sm font-bold">f</span>
-              </div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-400 transition-colors cursor-pointer">
+              </Link>
+              <Link href="#" className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-400 transition-colors cursor-pointer">
                 <span className="text-sm font-bold">t</span>
-              </div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors cursor-pointer">
+              </Link>
+              <Link href="#" className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors cursor-pointer">
                 <span className="text-sm font-bold">i</span>
-              </div>
+              </Link>
             </div>
           </div>
           <div>

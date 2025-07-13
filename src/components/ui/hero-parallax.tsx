@@ -121,14 +121,14 @@ export const Header = () => {
             ScanGo
           </Link>
         </div>
-        <h1 className="text-4xl md:text-8xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+        <h1 className="text-4xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
           Scan, Shop & Save
           <br />
           <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
             Instantly
           </span>
         </h1>
-        <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+        <p className="max-w-3xl mx-auto text-base md:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
           Transform your shopping experience with AI-powered scanning technology. 
           Compare prices, read reviews, and discover the best deals across thousands of products 
           with just a simple scan.
