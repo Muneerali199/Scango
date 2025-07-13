@@ -21,7 +21,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
 -   **🛍️ Modern E-commerce UI:** A beautiful and responsive interface built with ShadCN UI and Tailwind CSS.
 -   **🧠 AI-Powered Recommendations:** Utilizes Genkit to provide intelligent product suggestions based on the user's shopping cart contents.
 -   **🎨 Stunning Landing Page:** A dynamic, parallax hero section to welcome users.
--   **🔍 Dynamic Product Filtering:** Easily filter products by category to find exactly what you need.
+-   **🔍 Dynamic Product Filtering & Sorting:** Easily filter products by category and sort by name or price to find exactly what you need.
 -   **🛒 Interactive Shopping Cart:** A fully functional cart to manage items, update quantities, and see a real-time total.
 -   **👤 User & 🔑 Admin Dashboards:** Separate, secure dashboards for customer account management and administrator store oversight.
 -   **☀️ Dark & 🌑 Light Modes:** A theme toggle allows users to switch between a sleek dark mode and a clean light mode.
@@ -55,6 +55,7 @@ In today's retail landscape, customers lack immediate access to crucial product 
 -   **UI Components:** [ShadCN UI](https://ui.shadcn.com/)
 -   **Animations:** [Framer Motion](https://www.framer.com/motion/)
 -   **Generative AI:** [Genkit](https://firebase.google.com/docs/genkit) (for product analysis and recommendations)
+-   **Database:** [Firebase Firestore](https://firebase.google.com/docs/firestore)
 -   **Icons:** [Lucide React](https://lucide.dev/)
 -   **Authentication:** [Firebase Auth](https://firebase.google.com/docs/auth)
 
@@ -68,6 +69,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 -   Node.js (v18 or later)
 -   npm or yarn
+-   A Firebase project with Firestore enabled. See [databasesetup.md](databasesetup.md) for details.
 
 ### Installation & Running
 
@@ -97,7 +99,14 @@ Follow these instructions to get a copy of the project up and running on your lo
     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
     ```
 
-4.  **Run the development server:**
+4.  **Seed the Database (One-time setup):**
+    To populate your Firestore database with initial product data, run the following command. You only need to do this once.
+
+    ```bash
+    npm run db:seed
+    ```
+
+5.  **Run the development server:**
     ```bash
     npm run dev
     ```

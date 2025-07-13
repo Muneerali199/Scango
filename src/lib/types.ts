@@ -1,4 +1,5 @@
 
+
 export type ProductQuality = 'Budget' | 'Standard' | 'Premium';
 
 export const qualityMultipliers: Record<ProductQuality, number> = {
@@ -16,6 +17,7 @@ export interface Product {
   category: string;
   data_ai_hint?: string;
   views?: number;
+  timestamp: Date;
 }
 
 export interface CartItem extends Product {
