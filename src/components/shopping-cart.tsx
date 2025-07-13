@@ -27,6 +27,10 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + tax;
 
+  const handleRemoveItem = (itemId: string) => {
+    onRemove(itemId);
+  };
+
   const content = (
     <>
       <CardHeader className="pb-4 border-b">
@@ -47,7 +51,7 @@ const ShoppingCart: FC<ShoppingCartProps> = ({ items, onUpdate, onRemove, onChec
                 ) : (
                 items.map((item, index) => (
                     <div key={item.id}>
-                        <CartItemCard item={item} onUpdate={onUpdate} onRemove={onRemove} />
+                        <CartItemCard item={item} onUpdate={onUpdate} onRemove={handleRemoveItem} />
                         {index < items.length -1 && <Separator className="my-4"/>}
                     </div>
                 ))

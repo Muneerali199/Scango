@@ -38,17 +38,20 @@ const ProductList: FC<ProductListProps> = ({ products, onAddToCart, wishlist, on
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAddToCart={onAddToCart}
-            wishlist={wishlist}
-            onToggleWishlist={onToggleWishlist}
-          />
-        ))}
-      </div>
+      {products.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={onAddToCart}
+              wishlist={wishlist}
+              onToggleWishlist={onToggleWishlist}
+            />
+          ))}
+        </div>
+      )}
+
       {hasMore && (
         <div className="mt-12 flex justify-center">
             <Button onClick={onLoadMore} disabled={isLoadingMore} size="lg">

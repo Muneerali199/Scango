@@ -275,7 +275,12 @@ export default function StorePage() {
       <ShoppingCart
         items={cartItems}
         onUpdate={handleUpdateCartItem}
-        onRemove={handleClearCart}
+        onRemove={(itemId) => {
+          const newCartItems = cartItems.filter(item => item.id !== itemId);
+          setCartItems(newCartItems);
+          localStorage.setItem('cart', JSON.stringify(newCartItems));
+          triggerStorageUpdate();
+        }}
         onCheckout={() => {
             setIsCartOpen(false);
             setIsCheckoutOpen(true);
