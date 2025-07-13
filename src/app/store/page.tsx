@@ -11,14 +11,17 @@ import { productRecommendation, type ProductRecommendationOutput } from "@/ai/fl
 import AIRecommendations from "@/components/ai-recommendations";
 import { toast } from "react-hot-toast";
 import { CheckoutForm } from "@/components/checkout-form";
-import { products as initialProducts } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { db } from "@/lib/firebase";
+import { collection, query, onSnapshot } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function StorePage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = useState<ProductRecommendationOutput["recommendations"]>([]);
@@ -30,29 +33,28 @@ export default function StorePage() {
 
 
   useEffect(() => {
-    // Load products from localStorage or use initial products
-    const storedProducts = localStorage.getItem("products");
-    if (storedProducts) {
-        try {
-            const parsedProducts = JSON.parse(storedProducts);
-            setProducts(parsedProducts);
-        } catch (e) {
-            console.error("Failed to parse products from localStorage", e);
-            setProducts(initialProducts);
-            localStorage.setItem("products", JSON.stringify(initialProducts));
-        }
-    } else {
-        localStorage.setItem("products", JSON.stringify(initialProducts));
-    }
-    
-    // Listen for storage changes to update products list
+    // Real-time query to get products
+    const q = query(collection(db, "products"));
+    setIsLoadingProducts(true);
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const productsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Product[];
+      setProducts(productsData);
+      setIsLoadingProducts(false);
+    }, (error) => {
+        console.error("Error fetching products in real-time: ", error);
+        toast.error("Failed to load products.");
+        setIsLoadingProducts(false);
+    });
+
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
+
+  useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-        if (e.key === 'products') {
-            const updatedProducts = localStorage.getItem("products");
-            if (updatedProducts) {
-                setProducts(JSON.parse(updatedProducts));
-            }
-        }
         if (e.key === 'cart') {
             const updatedCart = localStorage.getItem("cart");
             if (updatedCart) {
@@ -234,12 +236,26 @@ export default function StorePage() {
                     ))}
                   </div>
                 </div>
-                <ProductList 
-                  products={filteredProducts} 
-                  onAddToCart={handleAddToCart}
-                  wishlist={wishlist}
-                  onToggleWishlist={handleToggleWishlist}
-                />
+                {isLoadingProducts ? (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div key={i} className="flex flex-col space-y-3">
+                        <Skeleton className="h-64 w-full rounded-xl" />
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-[200px]" />
+                          <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <ProductList 
+                    products={filteredProducts} 
+                    onAddToCart={handleAddToCart}
+                    wishlist={wishlist}
+                    onToggleWishlist={handleToggleWishlist}
+                  />
+                )}
                 <AIRecommendations 
                   recommendations={recommendations} 
                   isLoading={isLoadingRecommendations}
