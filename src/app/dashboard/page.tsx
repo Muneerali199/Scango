@@ -4,14 +4,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { getAuth, onAuthStateChanged, User, signOut } from "firebase/auth";
 import { firebaseApp, adminEmail } from "@/lib/firebase";
-import { Loader2, LogOut, ShoppingBag, Heart, Package, History } from "lucide-react";
+import { Loader2, LogOut, ShoppingBag, Heart, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import type { Product, CartItem, Order } from "@/lib/types";
+import type { CartItem, Order } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -214,5 +213,4 @@ export default function UserDashboard() {
       </main>
     </div>
   );
-
-    
+}
