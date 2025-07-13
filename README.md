@@ -1,6 +1,6 @@
 # ScanGo - AI-Powered Smart Checkout & Product Analysis
 
-Welcome to ScanGo, a futuristic e-commerce application that redefines the shopping experience. Built with Next.js and powered by Genkit, this project demonstrates a smart checkout system that not only facilitates purchases but also empowers consumers with deep, AI-driven insights into the products they buy.
+Welcome to ScanGo, a futuristic e-commerce application that redefines the shopping experience by blending a seamless, modern storefront with powerful, AI-driven product intelligence. Built with a cutting-edge stack including Next.js, ShadCN UI, and Google's Genkit, this project is more than just a store—it's a smart shopping assistant. It empowers consumers to make healthier, more sustainable, and informed purchasing decisions by offering deep analysis of products through a simple camera scan. Featuring a beautiful parallax landing page, separate user and admin dashboards, and AI-powered recommendations, ScanGo demonstrates the future of intelligent and interactive retail.
 
 ![ScanGo App Showcase](https://placehold.co/1200x600.png)
 *A placeholder for your app's hero image or GIF.*
