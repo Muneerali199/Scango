@@ -11,7 +11,6 @@ import { firebaseApp, adminEmail } from "@/lib/firebase";
 import { Loader2, LogOut, ShoppingBag, Heart, Package, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { products as allProducts } from "@/data/products";
 import type { Product, CartItem, Order } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -22,17 +21,14 @@ const mockOrders: Order[] = [
     date: "2024-05-20",
     total: 289.98,
     status: "Delivered",
-    items: [
-      { ...allProducts[0], quantity: 1, quality: 'Standard' },
-      { ...allProducts[5], quantity: 1, quality: 'Standard' },
-    ],
+    items: [],
   },
   {
     id: "ORD002",
     date: "2024-06-12",
     total: 39.95,
     status: "Processing",
-    items: [{ ...allProducts[8], quantity: 1, quality: 'Standard' }],
+    items: [],
   },
 ];
 
@@ -41,7 +37,7 @@ export default function UserDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [wishlistCount, setWishlistCount] = useState<number>(0);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -69,9 +65,8 @@ export default function UserDashboard() {
     const storedWishlistIds = localStorage.getItem("wishlist");
     if (storedWishlistIds) {
       try {
-        const ids = new Set(JSON.parse(storedWishlistIds));
-        const wishlistProducts = allProducts.filter(p => ids.has(p.id));
-        setWishlist(wishlistProducts);
+        const ids = JSON.parse(storedWishlistIds);
+        setWishlistCount(new Set(ids).size);
       } catch (e) {
         console.error("Failed to parse wishlist from localStorage", e);
         localStorage.removeItem("wishlist");
@@ -113,7 +108,7 @@ export default function UserDashboard() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background px-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/store" className="flex items-center gap-2">
             <ShoppingBag className="h-7 w-7 text-primary" />
             <h1 className="text-xl font-semibold">My Dashboard</h1>
           </Link>
@@ -145,7 +140,7 @@ export default function UserDashboard() {
                 <CardContent>
                 <div className="text-2xl font-bold">{cartItemCount}</div>
                 <p className="text-xs text-muted-foreground">
-                    <Link href="/" className="underline hover:text-primary">View Cart & Continue Shopping</Link>
+                    <Link href="/store" className="underline hover:text-primary">View Cart & Continue Shopping</Link>
                 </p>
                 </CardContent>
             </Card>
@@ -155,7 +150,7 @@ export default function UserDashboard() {
                 <Heart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                <div className="text-2xl font-bold">{wishlist.length}</div>
+                <div className="text-2xl font-bold">{wishlistCount}</div>
                 <p className="text-xs text-muted-foreground">Your saved items for later</p>
                 </CardContent>
             </Card>
@@ -175,29 +170,14 @@ export default function UserDashboard() {
              <Card>
                 <CardHeader>
                     <CardTitle>My Wishlist</CardTitle>
-                    <CardDescription>Items you've saved. Click to view product.</CardDescription>
+                    <CardDescription>Items you've saved will appear here.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {wishlist.length > 0 ? (
-                        <div className="space-y-4">
-                        {wishlist.map(item => (
-                            <Link href="/" key={item.id} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted -m-2">
-                                <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md aspect-square object-cover" data-ai-hint={item.data_ai_hint} />
-                                <div className="flex-1">
-                                    <p className="font-semibold">{item.name}</p>
-                                    <p className="text-primary font-bold">${item.price.toFixed(2)}</p>
-                                </div>
-                                <Button variant="secondary" size="sm">View</Button>
-                            </Link>
-                        ))}
-                        </div>
-                    ) : (
-                        <div className="text-center text-muted-foreground py-12">
-                            <Heart className="mx-auto h-12 w-12 mb-4" />
-                            <p className="font-semibold">Your wishlist is empty.</p>
-                            <p className="text-sm">Start browsing and add items you love!</p>
-                        </div>
-                    )}
+                    <div className="text-center text-muted-foreground py-12">
+                        <Heart className="mx-auto h-12 w-12 mb-4" />
+                        <p className="font-semibold">Your wishlist is empty.</p>
+                        <p className="text-sm">Go to the <Link href="/store" className="underline hover:text-primary">store</Link> and add items you love!</p>
+                    </div>
                 </CardContent>
             </Card>
              <Card>
@@ -234,4 +214,5 @@ export default function UserDashboard() {
       </main>
     </div>
   );
-}
+
+    
