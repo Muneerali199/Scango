@@ -13,6 +13,7 @@ import { toast } from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/product-card";
+import { cn } from "@/lib/utils";
 
 export default function ProductDetailPage() {
   const params = useParams();
