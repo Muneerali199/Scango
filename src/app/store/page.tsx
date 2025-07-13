@@ -15,17 +15,22 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { db } from "@/lib/firebase";
-import { collection, query, onSnapshot, orderBy, limit } from "firebase/firestore";
+import { collection, query, onSnapshot, orderBy, limit, startAfter, getDocs, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ProductCard from "@/components/product-card";
-import { Flame } from "lucide-react";
+import { Flame, Loader2 } from "lucide-react";
 
+const PRODUCTS_PER_PAGE = 8;
 
 export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [recommendations, setRecommendations] = useState<ProductRecommendationOutput["recommendations"]>([]);
@@ -37,26 +42,35 @@ export default function StorePage() {
 
 
   useEffect(() => {
-    // Real-time query to get all products
-    const q = query(collection(db, "products"));
+    // Initial products fetch
+    const fetchInitialProducts = async () => {
+      setIsLoadingProducts(true);
+      try {
+        const first = query(collection(db, "products"), orderBy("name"), limit(PRODUCTS_PER_PAGE));
+        const documentSnapshots = await getDocs(first);
+
+        const initialProducts = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        setProducts(initialProducts);
+
+        const lastVisibleDoc = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+        setLastVisible(lastVisibleDoc);
+
+        if (documentSnapshots.docs.length < PRODUCTS_PER_PAGE) {
+          setHasMore(false);
+        }
+
+      } catch (error) {
+        console.error("Error fetching initial products: ", error);
+        toast.error("Failed to load products.");
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+    
+    fetchInitialProducts();
+
     // Real-time query for trending products
     const trendingQuery = query(collection(db, "products"), orderBy("views", "desc"), limit(10));
-    
-    setIsLoadingProducts(true);
-
-    const unsubscribeProducts = onSnapshot(q, (snapshot) => {
-      const productsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Product[];
-      setProducts(productsData);
-      setIsLoadingProducts(false);
-    }, (error) => {
-        console.error("Error fetching products in real-time: ", error);
-        toast.error("Failed to load products.");
-        setIsLoadingProducts(false);
-    });
-
     const unsubscribeTrending = onSnapshot(trendingQuery, (snapshot) => {
       const trendingData = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -65,11 +79,41 @@ export default function StorePage() {
       setTrendingProducts(trendingData);
     });
 
-    return () => {
-        unsubscribeProducts();
-        unsubscribeTrending();
-    };
+    return () => unsubscribeTrending();
   }, []);
+
+  const handleLoadMore = async () => {
+    if (!lastVisible) {
+      setHasMore(false);
+      return;
+    };
+    setIsLoadingMore(true);
+
+    try {
+      const next = query(collection(db, "products"),
+        orderBy("name"),
+        startAfter(lastVisible),
+        limit(PRODUCTS_PER_PAGE)
+      );
+      const documentSnapshots = await getDocs(next);
+
+      const newProducts = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+      setProducts(prev => [...prev, ...newProducts]);
+
+      const lastVisibleDoc = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+      setLastVisible(lastVisibleDoc);
+
+      if (documentSnapshots.docs.length < PRODUCTS_PER_PAGE) {
+        setHasMore(false);
+      }
+    } catch(error) {
+        console.error("Error fetching more products: ", error);
+        toast.error("Failed to load more products.");
+    } finally {
+        setIsLoadingMore(false);
+    }
+  };
+
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -267,26 +311,17 @@ export default function StorePage() {
                   </div>
                 </div>
 
-                {isLoadingProducts ? (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <div key={i} className="flex flex-col space-y-3">
-                        <Skeleton className="h-64 w-full rounded-xl" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-[200px]" />
-                          <Skeleton className="h-4 w-[150px]" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <ProductList 
+                <ProductList 
                     products={filteredProducts} 
                     onAddToCart={handleAddToCart}
                     wishlist={wishlist}
                     onToggleWishlist={handleToggleWishlist}
-                  />
-                )}
+                    isLoading={isLoadingProducts}
+                    onLoadMore={handleLoadMore}
+                    hasMore={hasMore}
+                    isLoadingMore={isLoadingMore}
+                />
+                
                 <AIRecommendations 
                   recommendations={recommendations} 
                   isLoading={isLoadingRecommendations}
