@@ -50,7 +50,8 @@ This collection will store all the product information. Each document in this co
       "price": 399.99,
       "category": "Electronics",
       "image": "https://placehold.co/600x400.png",
-      "data_ai_hint": "wireless headphones"
+      "data_ai_hint": "wireless headphones",
+      "views": 0
     }
     ```
 
@@ -97,6 +98,45 @@ These rules ensure:
 -   Anyone can view products.
 -   Only a logged-in user with the email `admin@example.com` can create, update, or delete products.
 -   Users can only read and write to their own data (like their cart and wishlist).
+
+## 5. Composite Indexes for Sorting and Filtering
+
+**VERY IMPORTANT:** Firestore requires composite indexes for queries that filter on one field and sort on another. Without them, your queries will fail.
+
+1.  Go to the **Firestore Database** section in your Firebase Console.
+2.  Click on the **Indexes** tab.
+3.  Click **Create Index**.
+4.  Set up the following indexes. **The field order matters!**
+
+    *   **Index 1: Filter by Category, Sort by Price (Ascending)**
+        *   Collection: `products`
+        *   Fields:
+            1.  `category` (Ascending)
+            2.  `price` (Ascending)
+        *   Query Scope: Collection
+
+    *   **Index 2: Filter by Category, Sort by Price (Descending)**
+        *   Collection: `products`
+        *   Fields:
+            1.  `category` (Ascending)
+            2.  `price` (Descending)
+        *   Query Scope: Collection
+    
+    *   **Index 3: Filter by Category, Sort by Views (Popularity)**
+        *   Collection: `products`
+        *   Fields:
+            1.  `category` (Ascending)
+            2.  `views` (Descending)
+        *   Query Scope: Collection
+            
+    *   **Index 4: Filter by Category, Sort by Name**
+        *   Collection: `products`
+        *   Fields:
+            1.  `category` (Ascending)
+            2.  `name` (Ascending)
+        *   Query Scope: Collection
+
+After you create these, it may take a few minutes for them to be enabled. Queries that need these indexes will fail until they are ready. You can monitor the status in the Firebase console.
 
 ## Next Steps: Implementation in Code
 

@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Loader2, PlusCircle, Heart, Star, CheckCircle } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, onSnapshot, updateDoc, increment, collection, query, where, limit } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, updateDoc, increment, collection, query, where, limit, getDocs } from "firebase/firestore";
 import type { Product, CartItem } from "@/lib/types";
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
@@ -54,9 +54,10 @@ export default function ProductDetailPage() {
             where("id", "!=", productId),
             limit(4)
           );
-          onSnapshot(q, (snapshot) => {
-             const related = snapshot.docs.map(d => ({id: d.id, ...d.data()}) as Product);
-             setRelatedProducts(related);
+          
+          getDocs(q).then((snapshot) => {
+            const related = snapshot.docs.map(d => ({id: d.id, ...d.data()}) as Product);
+            setRelatedProducts(related);
           });
 
         } else {
