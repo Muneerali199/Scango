@@ -34,7 +34,7 @@ export const products: Product[] = [
     name: 'VoltPack Power Bank',
     description: 'A slim, high-capacity portable charger that keeps your devices powered up on the go.',
     price: 34.99,
-    image: 'https://placehold.co/600x600.png',
+    image: 'https://placehold.co/600x400.png',
     data_ai_hint: 'power bank',
     category: 'Accessories',
   },
