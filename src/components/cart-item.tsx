@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -32,7 +33,7 @@ const CartItemCard: FC<CartItemProps> = ({ item, onUpdate, onRemove }) => {
   return (
     <div className="flex items-start gap-4 py-4">
       <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
-        <Image src={item.image} alt={item.title} fill className="object-contain" data-ai-hint={item.data_ai_hint} />
+        <Image src={item.image} alt={item.title || 'Product image'} fill className="object-contain" data-ai-hint={item.data_ai_hint} />
       </div>
       <div className="flex-grow">
         <h3 className="font-semibold">{item.title}</h3>
