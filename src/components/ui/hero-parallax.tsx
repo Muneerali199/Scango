@@ -1,3 +1,4 @@
+
 "use client";
 import React from "react";
 import {
@@ -9,8 +10,8 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "./button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Scan, Camera } from "lucide-react";
+
 
 export const HeroParallax = ({
   products,
@@ -53,13 +54,13 @@ export const HeroParallax = ({
     springConfig
   );
   const translateY = useSpring(
-    useTransform(scrollYProgress, [0, 0.2], [-600, 500]),
+    useTransform(scrollYProgress, [0, 0.2], [-700, 500]),
     springConfig
   );
   return (
     <div
       ref={ref}
-      className="h-[250vh] md:h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
+      className="h-[300vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
     >
       <Header />
       <motion.div
@@ -106,20 +107,55 @@ export const HeroParallax = ({
 export const Header = () => {
   return (
     <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full  left-0 top-0">
-      <h1 className="text-4xl md:text-7xl font-bold text-foreground">
-        Welcome to ScanGo <br /> The Future of Shopping.
-      </h1>
-      <p className="max-w-2xl text-base md:text-xl mt-8 text-muted-foreground">
-        We build beautiful products with the latest technologies and frameworks.
-        We are a team of passionate developers and designers that love to build
-        amazing products.
-      </p>
-      <Link href="/store" className="mt-8 inline-block">
-        <Button size="lg" className="text-lg">
-            Explore The Store
-            <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
-      </Link>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center"
+      >
+        <div className="flex items-center justify-center mb-6">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-2xl">
+            <Scan className="w-8 h-8 text-white" />
+          </div>
+          <Link href="/" className="ml-3 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            ScanGo
+          </Link>
+        </div>
+        <h1 className="text-4xl md:text-8xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+          Scan, Shop & Save
+          <br />
+          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Instantly
+          </span>
+        </h1>
+        <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+          Transform your shopping experience with AI-powered scanning technology. 
+          Compare prices, read reviews, and discover the best deals across thousands of products 
+          with just a simple scan.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/store">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-2"
+              >
+                Start Shopping Now
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </Link>
+            <Link href="/scan">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-2xl font-semibold text-lg hover:border-blue-500 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-500 transition-all duration-300 flex items-center gap-2"
+              >
+                Try The Scanner
+                <Camera className="w-5 h-5" />
+              </motion.button>
+            </Link>
+        </div>
+      </motion.div>
     </div>
   );
 };
@@ -144,24 +180,22 @@ export const ProductCard = ({
         y: -20,
       }}
       key={product.title}
-      className="group/product h-96 w-[30rem] relative flex-shrink-0"
+      className="group/product h-96 w-[30rem] relative shrink-0"
     >
-      <Link
-        href={product.link}
-        className="block group-hover/product:shadow-2xl "
-      >
+      <Link href={product.link} className="block group-hover/product:shadow-2xl rounded-2xl overflow-hidden">
         <Image
           src={product.thumbnail}
-          height="600"
-          width="600"
-          className="object-cover object-left-top absolute h-full w-full inset-0"
+          height={600}
+          width={800}
+          className="object-cover object-center absolute h-full w-full inset-0 transition-transform duration-500 group-hover/product:scale-110"
           alt={product.title}
         />
       </Link>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black pointer-events-none"></div>
-      <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white">
-        {product.title}
-      </h2>
+      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300"></div>
+      <div className="absolute bottom-6 left-6 opacity-0 group-hover/product:opacity-100 text-white transition-opacity duration-300">
+        <h2 className="text-xl font-bold mb-2">{product.title}</h2>
+        <p className="text-sm text-gray-200">Tap to explore</p>
+      </div>
     </motion.div>
   );
 };

@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         hostname: 'aceternity.com',
         port: '',
         pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
