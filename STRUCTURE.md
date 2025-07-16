@@ -24,8 +24,16 @@ This directory follows the Next.js App Router convention for file-based routing,
 
 -   `globals.css`: Global stylesheets and CSS variable definitions for themes (light/dark mode).
 -   `layout.tsx`: The root layout component for the entire application.
--   `page.tsx`: The main e-commerce storefront page component.
+-   `page.tsx`: The main landing page with the parallax hero section.
+-   `store/page.tsx`: The main e-commerce storefront page component.
+-   `store/[productId]/page.tsx`: The dynamic page for displaying a single product's details.
 -   `scan/page.tsx`: The component for the AI product scanning feature.
+-   `login/page.tsx`: The main login portal, directing users to either the user or admin login page.
+-   `login/user/page.tsx`: The login page for regular users.
+-   `login/admin/page.tsx`: The login page for administrators.
+-   `signup/page.tsx`: The page for new users to create an account.
+-   `dashboard/page.tsx`: The dashboard for logged-in users to view their account details.
+-   `admin/dashboard/page.tsx`: The dashboard for administrators to manage products and view store analytics.
 
 ### `src/ai`
 
@@ -48,26 +56,21 @@ This is where all the reusable React components are stored.
 -   `ai-recommendations.tsx`: Component to display AI-powered product recommendations.
 -   `camera-scanner.tsx`: The component that handles camera access and image capture for the scan feature.
 -   `checkout-form.tsx`: The modal form for processing payments.
+-   `add-product-form.tsx`: A dialog form for admins to add new products to the store.
 -   `theme-provider.tsx`: Manages the application's light and dark themes.
 -   `theme-toggle.tsx`: The UI button for switching between themes.
--   `ui/`: Contains all the primitive UI components from **ShadCN UI**, such as `Button.tsx`, `Card.tsx`, `Dialog.tsx`, etc.
-
-### `src/data`
-
-This directory holds static data used by the application.
-
--   `products.ts`: An array of product objects, serving as the mock database for the store.
+-   `ui/`: Contains all the primitive UI components from **ShadCN UI**, such as `Button.tsx`, `Card.tsx`, `Dialog.tsx`, etc. Also includes the `hero-parallax.tsx` component for the landing page.
 
 ### `src/hooks`
 
 Custom React hooks are defined here.
 
--   `use-toast.ts`: A hook for managing and displaying toast notifications.
 -   `use-mobile.tsx`: A hook to detect if the user is on a mobile device.
 
 ### `src/lib`
 
 Shared utilities, type definitions, and library functions.
 
+-   `firebase.ts`: Initializes the Firebase app and exports the database and auth instances.
 -   `types.ts`: Defines shared TypeScript types and interfaces used across the application (e.g., `Product`, `CartItem`).
 -   `utils.ts`: Utility functions, including `cn` for merging Tailwind CSS classes.
